@@ -41,11 +41,12 @@ export const COMPANY: {
   entityNumber: Maybe<string>;
   registeredAgent: Maybe<string>;
   address: Maybe<{ street: string; locality: string; region: string; postalCode: string; country: string }>;
-  foreignRegistrations: Maybe<string[]>;
+  foreignRegistrations: Maybe<string>;
   management: Maybe<'Member-managed' | 'Manager-managed'>;
   einLast4: Maybe<string>;
   countries: Maybe<string[]>;
   phone: Maybe<string>;
+  /** Empty means none; metadata that needs it is left out. */
   linkedin: Maybe<string>;
   xHandle: Maybe<string>;
 } = {
@@ -56,16 +57,18 @@ export const COMPANY: {
   registeredAgent: 'Miguel Alfonso Perez, 30 N Gould St Ste R, Sheridan, WY 82801', // C5
   // C6, given by Miguel 2026-10-28. Same address as the registered agent (C5).
   address: { street: '30 N Gould St Ste R', locality: 'Sheridan', region: 'WY', postalCode: '82801', country: 'US' },
-  foreignRegistrations: pending('C7', 'Other states where the LLC is registered'),
+  foreignRegistrations: 'None. Wyoming only.', // C7
   management: 'Manager-managed', // C8, Operating Agreement section 4
   einLast4: '4568', // C11, last 4 only. Full EIN goes out through Diligence only.
-  countries: ['Mexico', 'Colombia', 'Chile', 'Argentina', 'Dominican Republic', 'Guatemala'], // C13
+  countries: ['United States', 'Mexico', 'Colombia', 'Chile', 'Argentina', 'Dominican Republic', 'Guatemala'], // C13
   phone: '+1 321-415-6682', // C14
-  // Kit default to confirm: https://www.linkedin.com/company/syndex-ventures
-  linkedin: pending('C15', 'LinkedIn company URL'),
-  // Spec suggests @syndexventures; confirm before use (C15).
-  xHandle: pending('C15', 'X handle'),
+  // C15: none for now. Set these when the profiles exist.
+  linkedin: '',
+  xHandle: '',
 };
+
+/** Leadership (C9). */
+export const LEADERS = [{ name: 'Miguel Alfonso Perez', title: 'CEO & Founder' }];
 
 /**
  * Mailboxes used by forms, the footer and security.txt (V6, confirmed).
