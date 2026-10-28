@@ -14,7 +14,7 @@ export interface DiligenceDoc {
 }
 
 export const DOCUMENTS: DiligenceDoc[] = [
-  { id: 'D1', name: 'Articles of organization', description: 'Formation filing for Syndex Ventures LLC.', availability: 'On request', kyb: true },
+  { id: 'D1', name: 'Articles of organization', description: 'Formation filing for Syndex Venture, LLC.', availability: 'On request', kyb: true },
   { id: 'D2', name: 'Operating agreement', description: 'Governing agreement of the LLC.', availability: 'On request', kyb: true },
   { id: 'D3', name: 'IRS EIN confirmation letter', description: 'CP 575 or 147C.', availability: 'On request', kyb: true },
   { id: 'D4', name: 'Certificate of good standing', description: 'Re-pulled roughly every 90 days.', availability: 'On request', kyb: true },

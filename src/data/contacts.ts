@@ -11,7 +11,7 @@ export interface OfficialContact {
 
 /** The parent domain is the only fact known so far. */
 export const OFFICIAL_CONTACTS: OfficialContact[] = [
-  { kind: 'domain', value: 'syndexventure.com', role: 'Company website and email domain of Syndex Ventures LLC' },
+  { kind: 'domain', value: 'syndexventure.com', role: 'Company website and email domain of Syndex Venture, LLC' },
 ];
 
 export const VERIFY_PENDING = ['V1', 'V2', 'V3', 'V4'];

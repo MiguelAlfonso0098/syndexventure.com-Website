@@ -15,7 +15,7 @@ export const SITE = {
   homeTitle: 'Syndex Ventures — Architecting the Infrastructure of Digital Commerce.',
   titleSeparator: ' | ',
   description:
-    'Syndex Ventures LLC builds and operates software applications, print-on-demand and cross-border e-commerce brands, and consented performance marketing programs.',
+    'Syndex Venture, LLC builds and operates software applications, print-on-demand and cross-border e-commerce brands, and consented performance marketing programs.',
   locale: 'en_US',
   localeAlternates: ['es_MX'],
   lang: 'en',
@@ -49,7 +49,7 @@ export const COMPANY: {
   linkedin: Maybe<string>;
   xHandle: Maybe<string>;
 } = {
-  legalName: 'Syndex Ventures LLC', // C1
+  legalName: 'Syndex Venture, LLC', // C1
   formationState: 'Wyoming', // C2, Articles of Organization
   formationDate: '2025-01-10', // C3, filed with the Wyoming Secretary of State
   entityNumber: '2025-001588201', // C4, Wyoming filing ID

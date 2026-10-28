@@ -1,5 +1,5 @@
 # app-ads.txt for syndexventure.com
-# Syndex Ventures LLC publishes no ad-supported mobile or CTV apps under this
+# Syndex Venture, LLC publishes no ad-supported mobile or CTV apps under this
 # developer domain. The placeholder record declares no authorized sellers.
 # If a Syndex app later monetizes with ads, replace the placeholder with the
 # ad network's lines (e.g. "google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0").

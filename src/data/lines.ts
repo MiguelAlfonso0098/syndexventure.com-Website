@@ -28,7 +28,7 @@ export const LINES: OperatingLine[] = [
     title: 'Cross-Border Commerce',
     short: 'E-commerce stores selling to consumers in Latin America.',
     summary:
-      'Syndex operates e-commerce stores in Latin America. Each store trades under its own brand, registered as a DBA of Syndex Ventures LLC, and lists its own statement descriptor in the registry.',
+      'Syndex operates e-commerce stores in Latin America. Each store trades under its own brand, registered as a DBA of Syndex Venture, LLC, and lists its own statement descriptor in the registry.',
     whatWeSell: 'Consumer products sold through branded online stores.',
     customers: 'Consumers in the countries each store serves.',
     countries: 'Mexico, Colombia, Chile, Argentina, Dominican Republic and Guatemala.',
@@ -38,7 +38,7 @@ export const LINES: OperatingLine[] = [
     settlement: pending('D10', 'Settlement cadence for Commerce'),
     naics: pending('C12', 'NAICS code for Cross-Border Commerce'),
     metaDescription:
-      'How Syndex Ventures LLC operates e-commerce stores in Latin America: what the stores sell, where, and how payments are received.',
+      'How Syndex Venture, LLC operates e-commerce stores in Latin America: what the stores sell, where, and how payments are received.',
   },
   {
     slug: 'print-on-demand',
@@ -64,7 +64,7 @@ export const LINES: OperatingLine[] = [
     title: 'Software & Applications',
     short: 'Software subscriptions and micro-apps for local service businesses.',
     summary:
-      'Syndex builds and sells software subscriptions, including micro-apps used by operators of local service businesses. Each product trades under its own brand, registered as a DBA of Syndex Ventures LLC.',
+      'Syndex builds and sells software subscriptions, including micro-apps used by operators of local service businesses. Each product trades under its own brand, registered as a DBA of Syndex Venture, LLC.',
     whatWeSell: 'Software subscriptions and applications.',
     customers: 'Businesses, including operators of local service businesses.',
     countries: pending('C13', 'Countries for Software & Applications'),
@@ -73,7 +73,7 @@ export const LINES: OperatingLine[] = [
     settlement: pending('D10', 'Settlement cadence for Software'),
     naics: pending('C12', 'NAICS code for Software & Applications'),
     metaDescription:
-      'Software subscriptions and applications built and operated by Syndex Ventures LLC, and how subscription revenue is received.',
+      'Software subscriptions and applications built and operated by Syndex Venture, LLC, and how subscription revenue is received.',
   },
   {
     slug: 'performance',
@@ -91,7 +91,7 @@ export const LINES: OperatingLine[] = [
     settlement: pending('R4', 'Invoice terms and payment cadence'),
     naics: pending('C12', 'NAICS code for Performance Marketing & Lead Generation'),
     metaDescription:
-      'How Syndex Ventures LLC generates consented insurance and legal leads for licensed buyers, and why this revenue arrives by invoice.',
+      'How Syndex Venture, LLC generates consented insurance and legal leads for licensed buyers, and why this revenue arrives by invoice.',
   },
 ];
 

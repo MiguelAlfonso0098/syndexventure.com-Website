@@ -1,6 +1,6 @@
 # syndexventure.com
 
-Public company profile of Syndex Ventures LLC. Astro 5, static output, deployed to Cloudflare Pages with Pages Functions for forms.
+Public company profile of Syndex Venture, LLC. Astro 5, static output, deployed to Cloudflare Pages with Pages Functions for forms.
 
 ## Commands
 
