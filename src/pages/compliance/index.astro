@@ -1,0 +1,38 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import PolicyCard from '@/components/PolicyCard.astro';
+import Pending from '@/components/Pending.astro';
+import { POLICIES } from '@/data/policies';
+import { MAILBOXES } from '@/config/site';
+---
+<BaseLayout
+  title="Trust & Compliance Center"
+  description="Consent and TCPA practices, refund and chargeback policy, data protection, advertising standards and AML screening."
+  crumbs={[{ label: 'Compliance', href: '/compliance/' }]}
+  next={[
+    { title: 'Due Diligence Room', text: 'Request signed or full copies of any policy.', href: '/diligence/' },
+    { title: 'Operating Model', text: 'How shared services, settlement and accounting are controlled.', href: '/company/operating-model/' },
+  ]}
+>
+  <PageHeader
+    title="Trust & Compliance Center"
+    lede="Our policies on consent, payments, data, advertising, intellectual property and sanctions screening. Each policy shows its effective date and version history."
+  />
+
+  <div class="btn-row pack">
+    <Pending id="D12" label="Policy pack PDF with all policies and effective dates. The download button appears once the file is in public/docs/." />
+  </div>
+
+  <div class="bento">
+    {POLICIES.map((p) => <PolicyCard level={2} policy={p} />)}
+  </div>
+
+  <section class="section" aria-labelledby="contact-h">
+    <h2 id="contact-h">Compliance contact</h2>
+    <p>Send compliance questions to <a href={`mailto:${MAILBOXES.compliance}`}><code>{MAILBOXES.compliance}</code></a>.</p>
+    <Pending id="P10" label="Compliance contact role to publish with this mailbox." />
+    <Pending id="P9" label="Licenses and registrations held (telemarketing, insurance marketing, LATAM tax or import)." />
+  </section>
+</BaseLayout>
+<style>.pack { margin-bottom: var(--s5); } .pack > * { flex: 1; }</style>

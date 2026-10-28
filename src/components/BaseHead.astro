@@ -1,0 +1,183 @@
+---
+/**
+ * All page metadata. Driven by src/config/site.ts.
+ * Pages pass title/description; everything else comes from config.
+ */
+import { SITE, COMPANY, MAILBOXES, MAILBOXES_CONFIRMED } from '@/config/site';
+import { known } from '@/lib/pending';
+
+export interface Props {
+  /** Page name. Rendered as "{title} | Syndex Ventures". Omit on Home. */
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+  type?: 'website' | 'article' | 'profile';
+  noindex?: boolean;
+  /** ISO dates and author, for Insights briefs (type 'article'). */
+  publishedTime?: string;
+  modifiedTime?: string;
+  author?: string;
+  section?: string;
+  canonical?: string;
+  /** Extra JSON-LD objects for this page. */
+  jsonLd?: Record<string, unknown>[];
+}
+
+const {
+  title,
+  description = SITE.description,
+  image = SITE.ogImage.url,
+  imageAlt = SITE.ogImage.alt,
+  type = 'website',
+  noindex = false,
+  publishedTime,
+  modifiedTime,
+  author,
+  section,
+  canonical: canonicalPath,
+  jsonLd = [],
+} = Astro.props;
+
+const fullTitle = title ? `${title}${SITE.titleSeparator}${SITE.name}` : SITE.homeTitle;
+const canonical = new URL(canonicalPath ?? Astro.url.pathname, SITE.url).href;
+const ogImage = new URL(image, SITE.url).href;
+const robots = noindex ? 'noindex, nofollow' : SITE.robots;
+const isArticle = type === 'article';
+const xHandle = known(COMPANY.xHandle);
+const linkedin = known(COMPANY.linkedin);
+const address = known(COMPANY.address);
+const foundingDate = known(COMPANY.formationDate);
+
+// JSON-LD never carries a placeholder: pending facts are left out.
+const organization: Record<string, unknown> = {
+  '@type': 'Organization',
+  '@id': `${SITE.url}/#organization`,
+  name: SITE.name,
+  legalName: COMPANY.legalName,
+  url: `${SITE.url}/`,
+  logo: { '@type': 'ImageObject', url: `${SITE.url}/icons/icon-512.png`, width: 512, height: 512 },
+  slogan: SITE.tagline,
+  description: SITE.description,
+};
+if (MAILBOXES_CONFIRMED) organization.email = MAILBOXES.contact;
+if (foundingDate) organization.foundingDate = foundingDate;
+if (address)
+  organization.address = {
+    '@type': 'PostalAddress',
+    streetAddress: address.street,
+    addressLocality: address.locality,
+    addressRegion: address.region,
+    postalCode: address.postalCode,
+    addressCountry: address.country,
+  };
+const sameAs = [linkedin, xHandle && `https://x.com/${xHandle.replace(/^@/, '')}`].filter(Boolean);
+if (sameAs.length) organization.sameAs = sameAs;
+
+const graph: Record<string, unknown>[] = [
+  organization,
+  {
+    '@type': 'WebSite',
+    '@id': `${SITE.url}/#website`,
+    url: `${SITE.url}/`,
+    name: SITE.name,
+    inLanguage: 'en-US',
+    publisher: { '@id': `${SITE.url}/#organization` },
+  },
+  ...jsonLd,
+];
+if (isArticle && publishedTime)
+  graph.push({
+    '@type': 'Article',
+    headline: title,
+    description,
+    datePublished: publishedTime,
+    dateModified: modifiedTime ?? publishedTime,
+    author: author ? { '@type': 'Person', name: author } : { '@id': `${SITE.url}/#organization` },
+    publisher: { '@id': `${SITE.url}/#organization` },
+    mainEntityOfPage: canonical,
+    image: ogImage,
+  });
+const ld = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c');
+---
+
+<!-- Basic -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<meta name="author" content={author ?? COMPANY.legalName} />
+<meta name="publisher" content={COMPANY.legalName} />
+<meta name="application-name" content={SITE.name} />
+<meta name="generator" content={Astro.generator} />
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" content={SITE.themeColor.light} media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content={SITE.themeColor.dark} media="(prefers-color-scheme: dark)" />
+<meta name="format-detection" content="telephone=no" />
+
+<!-- Fonts (self-hosted) -->
+<link rel="preload" href="/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin />
+
+<!-- SEO -->
+<link rel="canonical" href={canonical} />
+<meta name="robots" content={robots} />
+<meta name="googlebot" content={robots} />
+<link rel="alternate" hreflang="en" href={canonical} />
+<link rel="alternate" hreflang="x-default" href={canonical} />
+<!-- Phase 2: <link rel="alternate" hreflang="es" href={`${SITE.url}/es${Astro.url.pathname}`} /> -->
+<link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+{SITE.verification.google && <meta name="google-site-verification" content={SITE.verification.google} />}
+{SITE.verification.bing && <meta name="msvalidate.01" content={SITE.verification.bing} />}
+<script type="application/ld+json" is:inline set:html={ld} />
+
+<!-- Open Graph -->
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:locale" content={SITE.locale} />
+{SITE.localeAlternates.map((l) => <meta property="og:locale:alternate" content={l} />)}
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:secure_url" content={ogImage} />
+<meta property="og:image:type" content={SITE.ogImage.type} />
+<meta property="og:image:width" content={String(SITE.ogImage.width)} />
+<meta property="og:image:height" content={String(SITE.ogImage.height)} />
+<meta property="og:image:alt" content={imageAlt} />
+{isArticle && publishedTime && <meta property="article:published_time" content={publishedTime} />}
+{isArticle && publishedTime && <meta property="article:modified_time" content={modifiedTime ?? publishedTime} />}
+{isArticle && section && <meta property="article:section" content={section} />}
+{isArticle && linkedin && <meta property="article:publisher" content={linkedin} />}
+
+<!-- X / Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+{xHandle && <meta name="twitter:site" content={xHandle} />}
+{xHandle && <meta name="twitter:creator" content={xHandle} />}
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image:alt" content={imageAlt} />
+<meta name="twitter:domain" content="syndexventure.com" />
+<meta name="twitter:url" content={canonical} />
+
+<!-- Icons, mobile and PWA -->
+<link rel="icon" href="/favicon.ico" sizes="48x48" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon-light.svg" type="image/svg+xml" media="(prefers-color-scheme: light)" />
+<link rel="icon" href="/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
+<link rel="icon" href="/icons/favicon-32-light.png" sizes="32x32" type="image/png" media="(prefers-color-scheme: light)" />
+<link rel="icon" href="/icons/favicon-16-light.png" sizes="16x16" type="image/png" media="(prefers-color-scheme: light)" />
+<link rel="icon" href="/icons/favicon-32-dark.png" sizes="32x32" type="image/png" media="(prefers-color-scheme: dark)" />
+<link rel="icon" href="/icons/favicon-16-dark.png" sizes="16x16" type="image/png" media="(prefers-color-scheme: dark)" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+<link rel="mask-icon" href="/icons/mask-icon.svg" color="#0284C7" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content={SITE.shortName} />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="msapplication-TileColor" content="#0F172A" />
+<meta name="msapplication-TileImage" content="/icons/mstile-150.png" />
+<meta name="msapplication-config" content="/browserconfig.xml" />

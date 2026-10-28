@@ -1,0 +1,12 @@
+---
+/** Mark from the SEO kit: three stacked bars with an emerald status dot. */
+export interface Props { size?: number }
+const { size = 28 } = Astro.props;
+---
+<svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+  <rect width="64" height="64" rx="14" fill="var(--ink)" />
+  <rect x="16" y="17" width="32" height="6" rx="3" fill="var(--accent)" />
+  <rect x="16" y="29" width="20" height="6" rx="3" fill="var(--accent)" />
+  <circle cx="44" cy="32" r="4" fill="var(--success)" />
+  <rect x="16" y="41" width="32" height="6" rx="3" fill="var(--accent)" />
+</svg>

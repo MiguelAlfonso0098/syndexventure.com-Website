@@ -1,0 +1,19 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import { LEADERS } from '@/config/site';
+---
+<BaseLayout
+  title="Leadership"
+  description="The people who lead Syndex Venture, LLC."
+  crumbs={[{ label: 'Company', href: '/company/' }, { label: 'Leadership', href: '/company/leadership/' }]}
+  next={[
+    { title: 'Company', text: 'Entity details and formation facts.', href: '/company/' },
+    { title: 'Verify a Contact', text: 'Confirm that a person or email is genuinely ours.', href: '/verify/' },
+  ]}
+>
+  <PageHeader title="Leadership" lede="The people responsible for running the company." />
+  <dl class="facts">
+    {LEADERS.map((l) => <Fragment><dt>{l.name}</dt><dd>{l.title}</dd></Fragment>)}
+  </dl>
+</BaseLayout>

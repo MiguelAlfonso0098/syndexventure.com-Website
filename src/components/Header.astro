@@ -1,0 +1,71 @@
+---
+import { NAV, UTILITY_NAV } from '@/config/site';
+import Logo from './Logo.astro';
+
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => path === href || (href !== '/' && path.startsWith(href));
+---
+<header class="site-header">
+  <div class="container bar">
+    <a class="brand" href="/" aria-label="Syndex Ventures, home">
+      <Logo />
+      <span>Syndex Ventures</span>
+    </a>
+
+    <nav class="primary" aria-label="Primary">
+      <ul>
+        {NAV.map((item) => (
+          <li><a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="utility">
+      {UTILITY_NAV.map((item) => (
+        <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
+      ))}
+      <a class="btn" href="/diligence/request/">Request Documents</a>
+    </div>
+
+    <details class="mobile">
+      <summary>Menu</summary>
+      <nav aria-label="Mobile">
+        <ul>
+          {NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+          {UTILITY_NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+          <li><a href="/diligence/request/">Request Documents</a></li>
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar { display: flex; align-items: center; gap: var(--s5); min-height: var(--header-h); }
+  .brand { display: inline-flex; align-items: center; gap: var(--s3); color: var(--ink); text-decoration: none; font: 700 1.0625rem/1 var(--font-display); white-space: nowrap; }
+  .primary { flex: 1; display: flex; justify-content: center; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  .primary ul { display: flex; gap: var(--s5); }
+  .primary a, .utility a:not(.btn) { color: var(--ink); text-decoration: none; font-size: var(--fs-small); font-weight: 500; }
+  .primary a:hover, .utility a:not(.btn):hover, [aria-current='page'] { text-decoration: underline; text-underline-offset: 6px; }
+  .utility { display: flex; align-items: center; gap: var(--s4); }
+  .mobile { display: none; margin-left: auto; }
+  .mobile summary { cursor: pointer; list-style: none; font-weight: 600; font-size: var(--fs-small); padding: var(--s2) var(--s3); border: 1px solid var(--line); border-radius: var(--radius-control); }
+  .mobile summary::-webkit-details-marker { display: none; }
+  .mobile nav { position: absolute; left: 0; right: 0; top: var(--header-h); background: var(--bg); border-bottom: 1px solid var(--line); padding: var(--s3) var(--side) var(--s5); }
+  .mobile li a { display: block; padding: var(--s3) 0; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
+
+  @media (max-width: 1080px) {
+    .primary ul { gap: var(--s4); }
+    .utility a:not(.btn) { display: none; }
+  }
+  @media (max-width: 860px) {
+    .primary, .utility { display: none; }
+    .mobile { display: block; }
+  }
+</style>

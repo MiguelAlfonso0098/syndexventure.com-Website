@@ -1,0 +1,13 @@
+---
+/**
+ * Cloudflare Turnstile widget. The only third-party script on the site,
+ * loaded only on pages with a form. Site key comes from PUBLIC_TURNSTILE_SITE_KEY;
+ * the fallback is Cloudflare's always-pass test key for local development.
+ */
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '1x00000000000000000000AA';
+---
+<div class="field">
+  <div class="cf-turnstile" data-sitekey={siteKey} data-theme="auto" data-size="flexible"></div>
+  <noscript><p class="hint">The security check needs JavaScript. If you cannot enable it, email us instead.</p></noscript>
+</div>
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>

@@ -1,0 +1,25 @@
+---
+/**
+ * Renders a company fact, or a visible placeholder marker while it is pending.
+ * The marker carries data-pending so scripts/check-placeholders.mjs can list it.
+ */
+import { isPending, type Maybe } from '@/lib/pending';
+
+export interface Props {
+  value: Maybe<unknown>;
+  mono?: boolean;
+}
+const { value, mono = false } = Astro.props;
+const text = Array.isArray(value) ? value.join(', ') : String(value ?? '');
+---
+{
+  isPending(value) ? (
+    <span class="pending" data-pending={value.id} title={`Pending: inventory item ${value.id}`}>
+      [{value.id}: {value.label}]
+    </span>
+  ) : mono ? (
+    <code>{text}</code>
+  ) : (
+    <Fragment>{text}</Fragment>
+  )
+}

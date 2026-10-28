@@ -1,0 +1,8 @@
+# ads.txt for syndexventure.com
+# Syndex Venture, LLC does not sell advertising inventory on this domain.
+# Per IAB Tech Lab ads.txt 1.1, the placeholder record below declares that
+# no seller is authorized to sell ads for this domain, so any bid request
+# claiming to represent syndexventure.com is unauthorized.
+ownerdomain=syndexventure.com
+contact=compliance@syndexventure.com
+placeholder.example.com, placeholder, DIRECT, placeholder

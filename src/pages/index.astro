@@ -1,0 +1,83 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import FactsStrip from '@/components/FactsStrip.astro';
+import BentoCard from '@/components/BentoCard.astro';
+import Fact from '@/components/Fact.astro';
+import { COMPANY, SITE, DILIGENCE_SLA } from '@/config/site';
+import { LINES } from '@/data/lines';
+import { BRANDS } from '@/data/registry';
+
+const brandsIn = (line: string) => BRANDS.filter((b) => b.line === line && b.status === 'Active').length;
+---
+<BaseLayout
+  next={[
+    { title: 'Entity & Brand Registry', text: 'Match a DBA, domain or statement descriptor to the LLC.', href: '/portfolio/registry/' },
+    { title: 'Due Diligence Room', text: `Request formation, banking and processing documents. Response within ${DILIGENCE_SLA}.`, href: '/diligence/' },
+  ]}
+>
+  <section class="hero">
+    <p class="label">{COMPANY.legalName}</p>
+    <h1 class="display">{SITE.tagline}</h1>
+    <p class="lede">{SITE.description}</p>
+    <p class="small muted">
+      Formed in <Fact value={COMPANY.formationState} /> on <Fact value={COMPANY.formationDate} />.
+    </p>
+    <div class="btn-row">
+      <a class="btn" href="/portfolio/registry/#registry-search">Find a brand</a>
+      <a class="btn btn-secondary" href="/diligence/request/">Request Documents</a>
+      <a class="btn btn-secondary" href="/company/#entity-details">View entity details</a>
+    </div>
+  </section>
+
+  <section aria-labelledby="glance-h" class="glance">
+    <h2 id="glance-h" class="visually-hidden">At a glance</h2>
+    <FactsStrip
+      items={[
+        { label: 'Entity', value: COMPANY.legalName },
+        { label: 'Formed', value: COMPANY.formationDate },
+        { label: 'State', value: COMPANY.formationState },
+        { label: 'Lines', value: String(LINES.length) },
+        { label: 'Countries', value: COMPANY.countries },
+      ]}
+    />
+  </section>
+
+  <section class="section" aria-labelledby="lines-h">
+    <h2 id="lines-h">Operating lines</h2>
+    <p class="muted">Every brand belongs to one of four lines. Each line page states what is sold, to whom, and how payment is received.</p>
+    <div class="bento">
+      {LINES.map((l) => (
+        <BentoCard
+          title={l.title}
+          text={l.short}
+          href={`/portfolio/${l.slug}/`}
+          metrics={[
+            { label: 'Paid by', value: l.slug === 'performance' ? 'Invoice' : 'Card processing' },
+            { label: 'Active brands', value: String(brandsIn(l.registryLine)) },
+          ]}
+        />
+      ))}
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="verify-h">
+    <h2 id="verify-h">Check a charge, brand or contact</h2>
+    <div class="bento">
+      <BentoCard title="Identify a Charge" text="See which Syndex brand billed you and reach its support team." href="/charge-lookup/" cta="Look up a descriptor" />
+      <BentoCard title="Verify a Contact or Domain" text="Check whether an email, domain or phone number belongs to Syndex Venture, LLC." href="/verify/" cta="Verify" />
+      <BentoCard title="Trust & Compliance Center" text="Consent, refunds, data protection, advertising, IP and sanctions policies with effective dates." href="/compliance/" cta="Read policies" />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero { position: relative; padding-block: var(--s9) var(--s7); }
+  .hero::before {
+    content: ''; position: absolute; inset: 0 calc(-1 * var(--side)); z-index: -1;
+    background-image: radial-gradient(var(--ink) 1px, transparent 1px);
+    background-size: 24px 24px; opacity: 0.04;
+  }
+  .hero .display { max-width: 18ch; }
+  .hero .btn-row { margin-top: var(--s5); }
+  .glance { padding-bottom: var(--s7); }
+</style>

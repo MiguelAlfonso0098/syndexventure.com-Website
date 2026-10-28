@@ -1,0 +1,129 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Fact from '@/components/Fact.astro';
+import Pending from '@/components/Pending.astro';
+import StatusBadge from '@/components/StatusBadge.astro';
+import { LINES, type OperatingLine } from '@/data/lines';
+import { BRANDS } from '@/data/registry';
+
+export function getStaticPaths() {
+  return LINES.map((line, i) => ({
+    params: { line: line.slug },
+    props: { line, nextLine: LINES[(i + 1) % LINES.length] },
+  }));
+}
+
+interface Props { line: OperatingLine; nextLine: OperatingLine }
+const { line, nextLine } = Astro.props;
+const brands = BRANDS.filter((b) => b.line === line.registryLine);
+const isPod = line.slug === 'print-on-demand';
+const isLeads = line.slug === 'performance';
+---
+<BaseLayout
+  title={line.title}
+  description={line.metaDescription}
+  crumbs={[{ label: 'Portfolio', href: '/portfolio/' }, { label: line.title, href: `/portfolio/${line.slug}/` }]}
+  next={
+    isLeads
+      ? [
+          { title: 'Lead Buyers & FMOs', text: 'Verticals, consent proof, delivery methods and returns.', href: '/partners/lead-buyers/' },
+          { title: 'Consent, TCPA & Telemarketing', text: 'How consent is captured and recorded.', href: '/compliance/consumer-protection/' },
+        ]
+      : isPod
+        ? [
+            { title: 'Print & Production Partners', text: 'What we look for in print and fulfilment partners.', href: '/partners/print/' },
+            { title: 'IP & Takedown Requests', text: 'Our artwork policy and how to report a listing.', href: '/compliance/intellectual-property/' },
+          ]
+        : [
+            { title: 'Entity & Brand Registry', text: 'All brands, domains and descriptors.', href: '/portfolio/registry/' },
+            { title: 'Payments, Refunds & Chargebacks', text: 'Refund terms and dispute handling.', href: '/compliance/payments/' },
+          ]
+  }
+>
+  <PageHeader eyebrow="Operating line" title={line.title} lede={line.summary} />
+
+  <section aria-labelledby="facts-h">
+    <h2 id="facts-h" class="visually-hidden">Line facts</h2>
+    <dl class="facts">
+      <dt class="label">What we sell</dt><dd>{line.whatWeSell}</dd>
+      <dt class="label">Customers</dt><dd><Fact value={line.customers} /></dd>
+      <dt class="label">{isLeads ? 'States' : 'Countries'}</dt><dd><Fact value={line.countries} /></dd>
+      <dt class="label">Processors</dt><dd><Fact value={line.processors} /></dd>
+      <dt class="label">NAICS</dt><dd><Fact value={line.naics} mono /></dd>
+    </dl>
+  </section>
+
+  <section class="section">
+    <details class="card accordion" open>
+      <summary><h2>How revenue is received</h2></summary>
+      <p>{line.howPaid}</p>
+      <p>Settlement cadence: <Fact value={line.settlement} /></p>
+      <p class="small muted">Settlement from every line flows to the company’s master account and is tracked by line in the books. See <a href="/company/operating-model/">Operating Model</a>.</p>
+    </details>
+  </section>
+
+  {isPod && (
+    <section class="section" aria-labelledby="pod-h">
+      <h2 id="pod-h">How Print-on-Demand works</h2>
+      <ol class="steps">
+        <li>A customer buys an original design from one of our storefronts or marketplace listings.</li>
+        <li>The order routes automatically to a print partner through the storefront app.</li>
+        <li>The partner prints and ships the item. Nothing is printed before the customer pays, so there is no inventory.</li>
+        <li>Misprints and damage are handled through the partner’s reprint or refund process. The store’s support team is the customer’s contact.</li>
+      </ol>
+      <h3>Artwork</h3>
+      <p>We sell original or licensed artwork only. We do not use trademarks, characters, celebrities, sports teams or brand names. Rights holders can report a listing on the <a href="/compliance/intellectual-property/">IP &amp; Takedown</a> page.</p>
+      <h3>Products, channels and partners</h3>
+      <p>Product types, niches and channels: <Fact value={{ pending: true, id: 'R9', label: 'Niches, product types, storefront and marketplace channels' }} /></p>
+      <p>Print partners and production times: <Fact value={{ pending: true, id: 'R10', label: 'Print partners, regions, production and shipping times' }} /></p>
+    </section>
+  )}
+
+  {isLeads && (
+    <section class="section" aria-labelledby="consent-h">
+      <h2 id="consent-h">Consent and delivery</h2>
+      <p>Every lead is delivered with a record of the consumer’s consent. Buyers can request the consent record for any lead.</p>
+      <Pending id="P4" label="Consent language, consent-record vendor and retention period." />
+      <Pending id="R1" label="Lead verticals offered (for example legal, Medicare, final expense)." />
+      <Pending id="P9" label="Licenses and registrations held for telemarketing and insurance marketing." />
+    </section>
+  )}
+
+  <section class="section" aria-labelledby="brands-h">
+    <h2 id="brands-h">Brands in this line</h2>
+    {brands.length === 0 ? (
+      <Pending id="B*" label={`Registry rows for ${line.title}: brand, DBA, domain, descriptor, processor and support contact.`} />
+    ) : (
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Brand</th><th scope="col">Domain</th><th scope="col">Descriptor</th><th scope="col">Status</th></tr></thead>
+          <tbody>
+            {brands.map((b) => (
+              <tr>
+                <td>{b.brand}</td>
+                <td><code>{b.domains.join(', ')}</code></td>
+                <td><code>{b.descriptors.join(', ') || 'None (invoiced)'}</code></td>
+                <td><StatusBadge status={b.status} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+    <p class="small"><a href="/portfolio/registry/">View the full registry</a></p>
+  </section>
+
+  <p><a class="btn btn-secondary" href={`/portfolio/${nextLine.slug}/`}>Next line: {nextLine.title} →</a></p>
+</BaseLayout>
+
+<style>
+  .accordion summary { cursor: pointer; list-style: none; }
+  .accordion summary::-webkit-details-marker { display: none; }
+  .accordion summary h2 { display: inline; font-size: var(--fs-h3); }
+  .accordion summary::after { content: ' +'; color: var(--muted); }
+  .accordion[open] summary::after { content: ' −'; }
+  .accordion p:first-of-type { margin-top: var(--s4); }
+  .steps { padding-left: var(--s5); max-width: 72ch; }
+  .steps li + li { margin-top: var(--s2); }
+</style>

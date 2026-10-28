@@ -1,0 +1,24 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import BentoCard from '@/components/BentoCard.astro';
+import { PROGRAMS } from '@/data/programs';
+---
+<BaseLayout
+  title="Partner Programs"
+  description="Programs for lead buyers and FMOs, LATAM fulfillment providers, print production partners, and affiliate networks."
+  crumbs={[{ label: 'Partners', href: '/partners/' }]}
+  next={[
+    { title: 'Start a partnership inquiry', text: 'Tell us about your company and volume.', href: '/partners/inquiry/' },
+    { title: 'Operating Model', text: 'How we run shared services and settlement.', href: '/company/operating-model/' },
+  ]}
+>
+  <PageHeader title="Partner Programs" lede="We work with four kinds of partners. Each program page states who it is for, what we need, and how onboarding works." />
+  <aside class="card consumer-note">
+    <p class="small"><strong>Have a question about a charge?</strong> This page is for businesses. Use <a href="/charge-lookup/">Identify a Charge</a> to reach the brand that billed you.</p>
+  </aside>
+  <div class="bento">
+    {PROGRAMS.map((p) => <BentoCard level={2} title={p.title} text={p.forWhom} href={`/partners/${p.slug}/`} cta="View program" />)}
+  </div>
+</BaseLayout>
+<style>.consumer-note { margin-bottom: var(--s5); } .consumer-note p { margin: 0; }</style>

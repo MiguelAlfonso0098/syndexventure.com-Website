@@ -1,0 +1,72 @@
+---
+import { COMPANY, SITE, MAILBOXES, MAILBOXES_CONFIRMED, LEGAL_NAV, NAV } from '@/config/site';
+import { isPending } from '@/lib/pending';
+import Fact from './Fact.astro';
+
+const address = COMPANY.address;
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="container cols">
+    <div>
+      <p class="name">{COMPANY.legalName}</p>
+      <address>
+        {isPending(address) ? <Fact value={address} /> : (
+          <Fragment>{address.street}<br />{address.locality}, {address.region} {address.postalCode}<br />{address.country}</Fragment>
+        )}
+      </address>
+      <p class="small muted">Last reviewed: <Fact value={SITE.lastReviewed} mono /></p>
+    </div>
+
+    <nav aria-label="Footer: site">
+      <p class="label">Site</p>
+      <ul>
+        {NAV.map((i) => <li><a href={i.href}>{i.label}</a></li>)}
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </nav>
+
+    <nav aria-label="Footer: verification">
+      <p class="label">Check</p>
+      <ul>
+        <li><a href="/portfolio/registry/">Entity &amp; Brand Registry</a></li>
+        <li><a href="/charge-lookup/">Identify a Charge</a></li>
+        <li><a href="/verify/">Verify a contact</a></li>
+        <li><a href="/compliance/intellectual-property/">Report an IP concern</a></li>
+      </ul>
+    </nav>
+
+    <div>
+      <p class="label">Contact</p>
+      <ul class="mono-list">
+        <li><a href={`mailto:${MAILBOXES.contact}`}>{MAILBOXES.contact}</a></li>
+        <li><a href={`mailto:${MAILBOXES.compliance}`}>{MAILBOXES.compliance}</a></li>
+        <li><a href={`mailto:${MAILBOXES.partners}`}>{MAILBOXES.partners}</a></li>
+        <li><a href={`mailto:${MAILBOXES.security}`}>{MAILBOXES.security}</a></li>
+      </ul>
+      {!MAILBOXES_CONFIRMED && <p class="small"><span class="pending" data-pending="V6">[V6: confirm mailbox names]</span></p>}
+      <p class="small"><Fact value={COMPANY.phone} /></p>
+    </div>
+  </div>
+
+  <div class="container legal">
+    <p class="small muted">© {year} {COMPANY.legalName}. All rights reserved.</p>
+    <nav aria-label="Legal">
+      <ul>{LEGAL_NAV.map((i) => <li><a href={i.href}>{i.label}</a></li>)}</ul>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .site-footer { border-top: 1px solid var(--line); background: var(--surface); margin-top: var(--s8); padding-top: var(--s7); }
+  .cols { display: grid; grid-template-columns: 2fr 1fr 1fr 1.4fr; gap: var(--s6); }
+  @media (max-width: 860px) { .cols { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .cols { grid-template-columns: 1fr; } }
+  .name { font: 700 1rem/1.4 var(--font-display); margin-bottom: var(--s2); }
+  address { font-style: normal; font-size: var(--fs-small); margin-bottom: var(--s4); }
+  ul { list-style: none; margin: var(--s3) 0 0; padding: 0; display: grid; gap: var(--s2); font-size: var(--fs-small); }
+  .mono-list a { font-family: var(--font-mono); font-size: var(--fs-data); }
+  .legal { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s4); border-top: 1px solid var(--line); margin-top: var(--s7); padding-block: var(--s5); }
+  .legal p { margin: 0; }
+  .legal ul { display: flex; flex-wrap: wrap; gap: var(--s4); margin: 0; }
+</style>

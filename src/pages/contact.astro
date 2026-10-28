@@ -1,0 +1,32 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Fact from '@/components/Fact.astro';
+import { COMPANY, MAILBOXES } from '@/config/site';
+import { isPending } from '@/lib/pending';
+
+const rows = [
+  { who: 'General', mail: MAILBOXES.contact },
+  { who: 'Compliance', mail: MAILBOXES.compliance },
+  { who: 'Due diligence requests', mail: MAILBOXES.diligence },
+  { who: 'Partnerships', mail: MAILBOXES.partners },
+  { who: 'Security and impersonation', mail: MAILBOXES.security },
+  { who: 'IP notices', mail: MAILBOXES.ip },
+];
+---
+<BaseLayout
+  title="Contact"
+  description="Official contact channels for Syndex Venture, LLC."
+  crumbs={[{ label: 'Contact', href: '/contact/' }]}
+  next={[
+    { title: 'Identify a Charge', text: 'Questions about an order or refund go to the brand’s own support.', href: '/charge-lookup/' },
+    { title: 'Verify a Contact', text: 'Check that a message really came from us.', href: '/verify/' },
+  ]}
+>
+  <PageHeader title="Contact" lede="Order and refund questions go to the support team of the brand you bought from. Use Identify a Charge to find it. For everything else, use the channels below." />
+  <dl class="facts">
+    {rows.map((r) => <Fragment><dt class="label">{r.who}</dt><dd><a href={`mailto:${r.mail}`}><code>{r.mail}</code></a></dd></Fragment>)}
+    <dt class="label">Phone</dt><dd><Fact value={COMPANY.phone} mono /></dd>
+    <dt class="label">Address</dt><dd>{isPending(COMPANY.address) ? <Fact value={COMPANY.address} /> : `${COMPANY.address.street}, ${COMPANY.address.locality}, ${COMPANY.address.region} ${COMPANY.address.postalCode}, ${COMPANY.address.country}`}</dd>
+  </dl>
+</BaseLayout>

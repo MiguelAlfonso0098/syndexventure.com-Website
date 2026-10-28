@@ -1,0 +1,5 @@
+Contact: mailto:security@syndexventure.com
+Expires: 2027-10-24T00:00:00.000Z
+Preferred-Languages: en, es
+Canonical: https://syndexventure.com/.well-known/security.txt
+Policy: https://syndexventure.com/legal/security/

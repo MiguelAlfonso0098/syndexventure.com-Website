@@ -1,0 +1,50 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Turnstile from '@/components/Turnstile.astro';
+import { DOCUMENTS, PURPOSES } from '@/data/documents';
+import { DILIGENCE_SLA } from '@/config/site';
+---
+<BaseLayout
+  title="Request Documents"
+  description="Request formation, banking and processing documents for underwriting, KYB and audit. Response within one business day."
+  crumbs={[{ label: 'Due Diligence', href: '/diligence/' }, { label: 'Request Documents', href: '/diligence/request/' }]}
+>
+  <PageHeader title="Request Documents" lede={`We review each request and reply within ${DILIGENCE_SLA}. Approved documents are sent by secure link.`} />
+
+  <form class="form" method="post" action="/api/diligence">
+    <fieldset class="field">
+      <legend>Documents</legend>
+      {DOCUMENTS.filter((d) => d.availability === 'On request').map((d) => (
+        <label class="check"><input type="checkbox" name="docs" value={d.id} data-kyb={d.kyb ? '' : undefined} /> {d.name}</label>
+      ))}
+    </fieldset>
+    <div class="field"><label for="dr-name">Full name</label><input id="dr-name" name="name" type="text" required autocomplete="name" /></div>
+    <div class="field">
+      <label for="dr-email">Work email</label>
+      <input id="dr-email" name="email" type="email" required autocomplete="email" aria-describedby="dr-email-hint" />
+      <p class="hint" id="dr-email-hint">Use your organization’s email. Requests from personal email domains take longer to review.</p>
+    </div>
+    <div class="field"><label for="dr-org">Organization</label><input id="dr-org" name="organization" type="text" required autocomplete="organization" /></div>
+    <div class="field"><label for="dr-role">Role</label><input id="dr-role" name="role" type="text" required autocomplete="organization-title" /></div>
+    <div class="field">
+      <label for="dr-purpose">Purpose</label>
+      <select id="dr-purpose" name="purpose" required>
+        <option value="">Select a purpose</option>
+        {PURPOSES.map((p) => <option>{p}</option>)}
+      </select>
+    </div>
+    <div class="field"><label for="dr-notes">Notes (optional)</label><textarea id="dr-notes" name="notes"></textarea></div>
+    <Turnstile />
+    <div><button class="btn" type="submit">Submit request</button></div>
+  </form>
+</BaseLayout>
+
+<script>
+  // Carry selections from the document index (?docs=D1&docs=D2) or the KYB pack button (?pack=kyb).
+  const q = new URLSearchParams(location.search);
+  const wanted = new Set(q.getAll('docs'));
+  document.querySelectorAll<HTMLInputElement>('input[name="docs"]').forEach((el) => {
+    if (wanted.has(el.value) || (q.get('pack') === 'kyb' && el.hasAttribute('data-kyb'))) el.checked = true;
+  });
+</script>

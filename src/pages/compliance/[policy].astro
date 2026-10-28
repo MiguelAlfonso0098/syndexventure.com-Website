@@ -1,0 +1,58 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Pending from '@/components/Pending.astro';
+import { POLICIES, type Policy } from '@/data/policies';
+import { DILIGENCE_SLA } from '@/config/site';
+
+// IP & Takedown has its own page with the report form.
+export function getStaticPaths() {
+  return POLICIES.filter((p) => p.slug !== 'intellectual-property').map((policy) => ({ params: { policy: policy.slug }, props: { policy } }));
+}
+interface Props { policy: Policy }
+const { policy } = Astro.props;
+---
+<BaseLayout
+  title={policy.title}
+  description={policy.summary}
+  crumbs={[{ label: 'Compliance', href: '/compliance/' }, { label: policy.title, href: `/compliance/${policy.slug}/` }]}
+  next={[
+    { title: 'All policies', text: 'Back to the Trust & Compliance Center.', href: '/compliance/' },
+    { title: 'Request a signed copy', text: `Through the Due Diligence Room, within ${DILIGENCE_SLA}.`, href: '/diligence/request/?docs=D12' },
+  ]}
+>
+  <PageHeader eyebrow="Policy" title={policy.title} lede={policy.summary}>
+    <dl class="meta">
+      <div><dt class="label">Effective</dt><dd>{policy.effectiveDate ? <code>{policy.effectiveDate}</code> : <span class="pending" data-pending={policy.inventoryId}>[{policy.inventoryId}: effective date]</span>}</dd></div>
+      <div><dt class="label">Version</dt><dd>{policy.version ? <code>{policy.version}</code> : <span class="muted small">Not published</span>}</dd></div>
+    </dl>
+  </PageHeader>
+
+  <section aria-labelledby="summary-h">
+    <h2 id="summary-h">Summary</h2>
+    <Pending id={policy.inventoryId} label={`${policy.inventoryLabel}. Policy text needs attorney review before launch.`} />
+  </section>
+
+  <section class="section" aria-labelledby="full-h">
+    <h2 id="full-h">Full text</h2>
+    <Pending id={policy.inventoryId} label="Full policy text." />
+  </section>
+
+  <section class="section" aria-labelledby="history-h">
+    <details>
+      <summary><h2 id="history-h" class="inline">Version history</h2></summary>
+      {policy.history?.length ? (
+        <div class="table-wrap"><table>
+          <thead><tr><th scope="col">Version</th><th scope="col">Date</th><th scope="col">Change</th></tr></thead>
+          <tbody>{policy.history.map((h) => <tr><td><code>{h.version}</code></td><td><code>{h.date}</code></td><td>{h.note}</td></tr>)}</tbody>
+        </table></div>
+      ) : <p class="muted">No versions published yet.</p>}
+    </details>
+  </section>
+</BaseLayout>
+<style>
+  .meta { display: flex; gap: var(--s6); margin: var(--s4) 0 0; }
+  .meta dd { margin: var(--s1) 0 0; }
+  summary { cursor: pointer; }
+  .inline { display: inline; }
+</style>

@@ -1,0 +1,35 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Pending from '@/components/Pending.astro';
+import { PROGRAMS, type Program } from '@/data/programs';
+import { lineBySlug } from '@/data/lines';
+
+export function getStaticPaths() {
+  return PROGRAMS.map((program) => ({ params: { program: program.slug }, props: { program } }));
+}
+interface Props { program: Program }
+const { program } = Astro.props;
+const line = lineBySlug(program.relatedLine)!;
+---
+<BaseLayout
+  title={program.title}
+  description={`${program.title} program at Syndex Ventures: ${program.forWhom}`}
+  crumbs={[{ label: 'Partners', href: '/partners/' }, { label: program.title, href: `/partners/${program.slug}/` }]}
+  next={[
+    { title: 'Start a partnership inquiry', text: 'The form opens with this program selected.', href: `/partners/inquiry/?program=${program.slug}` },
+    { title: line.title, text: 'The operating line this program supports.', href: `/portfolio/${line.slug}/` },
+  ]}
+>
+  <PageHeader eyebrow="Partner program" title={program.title} lede={program.intro}>
+    <p class="small"><strong>For:</strong> {program.forWhom}</p>
+    <a class="btn" href={`/partners/inquiry/?program=${program.slug}`}>Start a partnership inquiry</a>
+  </PageHeader>
+  {program.sections.map((s) => (
+    <section class="block">
+      <h2>{s.heading}</h2>
+      <Pending id={s.id} label={s.label} />
+    </section>
+  ))}
+</BaseLayout>
+<style>.block + .block { margin-top: var(--s6); }</style>

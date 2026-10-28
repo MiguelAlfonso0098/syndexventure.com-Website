@@ -1,0 +1,28 @@
+{
+  "name": "syndexventure.com",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/check-placeholders.mjs",
+    "build:strict": "astro build && node scripts/check-placeholders.mjs --strict",
+    "preview": "astro preview",
+    "check": "astro check",
+    "fonts": "node scripts/copy-fonts.mjs",
+    "icons": "node scripts/build-icons.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.4",
+    "astro": "5.18.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.4",
+    "@cloudflare/workers-types": "4.20251014.0",
+    "@fontsource-variable/inter": "5.2.8",
+    "@fontsource/jetbrains-mono": "5.2.8",
+    "sharp": "0.34.4",
+    "typescript": "5.9.3"
+  }
+}

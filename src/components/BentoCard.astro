@@ -1,0 +1,38 @@
+---
+import Fact from './Fact.astro';
+import type { Maybe } from '@/lib/pending';
+export interface Props {
+  title: string;
+  text: string;
+  href: string;
+  metrics?: { label: string; value: Maybe<unknown> }[];
+  cta?: string;
+  level?: 2 | 3;
+}
+const { title, text, href, metrics = [], cta = 'Read more', level = 3 } = Astro.props;
+const H = `h${level}` as 'h2' | 'h3';
+---
+<article class="card bento-card">
+  <H class="t"><a href={href}>{title}</a></H>
+  <p class="small">{text}</p>
+  {metrics.length > 0 && (
+    <dl>
+      {metrics.map((m) => (
+        <div><dt class="label">{m.label}</dt><dd><Fact value={m.value} /></dd></div>
+      ))}
+    </dl>
+  )}
+  <span class="arrow small" aria-hidden="true">{cta} →</span>
+</article>
+<style>
+  .bento-card { position: relative; display: flex; flex-direction: column; gap: var(--s3); transition: border-color var(--ease); }
+  .bento-card:hover { border-color: var(--accent); }
+  .t { margin: 0; font-size: var(--fs-h3); line-height: var(--lh-h3); }
+  .t a { color: var(--ink); text-decoration: none; }
+  .t a::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-card); }
+  p { margin: 0; }
+  dl { display: grid; gap: var(--s2); margin: 0; padding-top: var(--s3); border-top: 1px solid var(--line); }
+  dl div { display: flex; justify-content: space-between; gap: var(--s3); align-items: baseline; }
+  dd { margin: 0; font-size: var(--fs-small); text-align: right; }
+  .arrow { margin-top: auto; color: var(--accent-text); font-weight: 600; }
+</style>

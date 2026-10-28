@@ -1,0 +1,47 @@
+---
+import BaseHead, { type Props as HeadProps } from '@/components/BaseHead.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import Breadcrumbs, { type Crumb } from '@/components/Breadcrumbs.astro';
+import NextSteps, { type Step } from '@/components/NextSteps.astro';
+import { SITE } from '@/config/site';
+import '@/styles/global.css';
+
+export interface Props extends HeadProps {
+  crumbs?: Crumb[];
+  next?: [Step, Step];
+}
+
+const { crumbs = [], next, jsonLd = [], ...head } = Astro.props;
+
+const ld = [...jsonLd];
+if (crumbs.length)
+  ld.push({
+    '@type': 'BreadcrumbList',
+    itemListElement: [{ label: 'Home', href: '/' }, ...crumbs].map((c, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: c.label,
+      item: new URL(c.href, SITE.url).href,
+    })),
+  });
+---
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <BaseHead {...head} jsonLd={ld} />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main" tabindex="-1">
+      <div class="container">
+        {crumbs.length > 0 && <Breadcrumbs items={crumbs} />}
+        <slot />
+      </div>
+      {next && <NextSteps steps={next} />}
+    </main>
+    <Footer />
+  </body>
+</html>

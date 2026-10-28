@@ -1,0 +1,53 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Pending from '@/components/Pending.astro';
+import Turnstile from '@/components/Turnstile.astro';
+import { MAILBOXES } from '@/config/site';
+---
+<BaseLayout
+  title="IP & Takedown Requests"
+  description="Syndex Ventures sells original or licensed artwork only. Rights holders can report an infringing listing here."
+  crumbs={[{ label: 'Compliance', href: '/compliance/' }, { label: 'IP & Takedown Requests', href: '/compliance/intellectual-property/' }]}
+  next={[
+    { title: 'Print-on-Demand', text: 'How our made-to-order stores work.', href: '/portfolio/print-on-demand/' },
+    { title: 'All policies', text: 'Back to the Trust & Compliance Center.', href: '/compliance/' },
+  ]}
+>
+  <PageHeader
+    eyebrow="Policy"
+    title="IP & Takedown Requests"
+    lede="We sell original or licensed artwork only. We do not use trademarks, characters, celebrities, sports teams or brand names. If you believe a listing infringes your rights, report it below."
+  />
+
+  <section aria-labelledby="policy-h">
+    <h2 id="policy-h">Policy</h2>
+    <Pending id="P12" label="IP & takedown policy text and effective date." />
+    <h3>DMCA designated agent</h3>
+    <Pending id="P12" label="DMCA designated agent name and address, as registered with the US Copyright Office." />
+    <h3>Response time</h3>
+    <p>We respond to every notice within 2 business days and remove listings that infringe.</p>
+  </section>
+
+  <section class="section" aria-labelledby="form-h">
+    <h2 id="form-h">Report an IP concern</h2>
+    <p>Notices go to <code>{MAILBOXES.ip}</code>. You receive a reference ID.</p>
+    <form class="form" method="post" action="/api/report">
+      <input type="hidden" name="kind" value="ip" />
+      <div class="field"><label for="ip-holder">Rights holder</label><input id="ip-holder" name="rights_holder" type="text" required autocomplete="organization" /></div>
+      <div class="field"><label for="ip-name">Your name</label><input id="ip-name" name="name" type="text" required autocomplete="name" /></div>
+      <div class="field"><label for="ip-email">Email</label><input id="ip-email" name="email" type="email" required autocomplete="email" /></div>
+      <div class="field"><label for="ip-work">Work being infringed</label><textarea id="ip-work" name="work" required></textarea><p class="hint">Describe the work and, if you can, link to an authorized copy.</p></div>
+      <div class="field"><label for="ip-urls">Infringing URL(s)</label><textarea id="ip-urls" name="urls" required></textarea><p class="hint">One URL per line.</p></div>
+      <div class="field">
+        <label class="check"><input type="checkbox" name="good_faith" value="yes" required /> I have a good-faith belief that the use described is not authorized by the rights holder, its agent or the law.</label>
+      </div>
+      <div class="field">
+        <label class="check"><input type="checkbox" name="accuracy" value="yes" required /> The information in this notice is accurate, and I am the rights holder or authorized to act for the rights holder.</label>
+      </div>
+      <div class="field"><label for="ip-sig">Signature (type your full name)</label><input id="ip-sig" name="signature" type="text" required /></div>
+      <Turnstile />
+      <div><button class="btn" type="submit">Submit notice</button></div>
+    </form>
+  </section>
+</BaseLayout>
