@@ -69,11 +69,11 @@ export const COMPANY: {
 };
 
 /**
- * Mailboxes used by forms, the footer and security.txt (V6).
- * These are the spec's suggested names. Confirm or replace them before launch.
+ * Mailboxes used by forms, the footer and security.txt (V6, confirmed).
+ * hello@ is the general address.
  */
 export const MAILBOXES = {
-  contact: 'contact@syndexventure.com',
+  contact: 'hello@syndexventure.com',
   compliance: 'compliance@syndexventure.com',
   diligence: 'diligence@syndexventure.com',
   partners: 'partners@syndexventure.com',
@@ -81,7 +81,7 @@ export const MAILBOXES = {
   ip: 'ip@syndexventure.com',
 } as const;
 
-export const MAILBOXES_CONFIRMED = false; // set true once V6 is answered
+export const MAILBOXES_CONFIRMED = true; // V6 confirmed by Miguel, 2026-10-28
 
 /** Diligence response time promised on the site (V7). The spec proposes one business day. */
 export const DILIGENCE_SLA = 'one business day';
