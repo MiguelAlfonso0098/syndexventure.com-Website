@@ -1,0 +1,8 @@
+# www → apex is best done as a Cloudflare Redirect Rule on the zone;
+# these cover legacy paths.
+/about    /company/        301
+/about/   /company/        301
+/privacy  /legal/privacy/  301
+/privacy/ /legal/privacy/  301
+/terms    /legal/terms/    301
+/terms/   /legal/terms/    301

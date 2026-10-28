@@ -1,0 +1,21 @@
+# robots.txt for https://syndexventure.com
+# Public, partner-facing site. Form endpoints and confirmation pages are excluded.
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /diligence/request/thanks/
+Disallow: /partners/inquiry/thanks/
+Disallow: /verify/report/thanks/
+Disallow: /compliance/intellectual-property/thanks/
+Disallow: /*?*utm_
+
+# AI crawlers: allowed by default so the company profile is described accurately.
+# To opt out, uncomment the block below.
+# User-agent: GPTBot
+# User-agent: ClaudeBot
+# User-agent: Google-Extended
+# User-agent: CCBot
+# Disallow: /
+
+Sitemap: https://syndexventure.com/sitemap-index.xml

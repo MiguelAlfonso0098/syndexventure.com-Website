@@ -1,0 +1,49 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Fact from '@/components/Fact.astro';
+import { COMPANY, SITE } from '@/config/site';
+import { LINES } from '@/data/lines';
+import { isPending } from '@/lib/pending';
+
+const ein = isPending(COMPANY.einLast4) ? COMPANY.einLast4 : `XX-XXX${COMPANY.einLast4}`;
+---
+<BaseLayout
+  title="Company"
+  description="Entity facts for Syndex Ventures LLC: formation, registered agent, management, address and operating lines."
+  crumbs={[{ label: 'Company', href: '/company/' }]}
+  next={[
+    { title: 'Operating Model', text: 'Shared services, brand separation, settlement and accounting.', href: '/company/operating-model/' },
+    { title: 'Due Diligence Room', text: 'Request the articles of organization and good-standing certificate.', href: '/diligence/' },
+  ]}
+>
+  <PageHeader title="Company" lede={`${COMPANY.legalName} builds and operates brands in four lines of business: ${LINES.map((l) => l.title).join(', ')}.`} />
+
+  <section id="entity-details" aria-labelledby="entity-h">
+    <h2 id="entity-h">Entity details</h2>
+    <dl class="facts">
+      <dt class="label">Legal name</dt><dd>{COMPANY.legalName}</dd>
+      <dt class="label">Entity type</dt><dd>Limited liability company</dd>
+      <dt class="label">State of formation</dt><dd><Fact value={COMPANY.formationState} /></dd>
+      <dt class="label">Formation date</dt><dd><Fact value={COMPANY.formationDate} mono /></dd>
+      <dt class="label">State file number</dt><dd><Fact value={COMPANY.entityNumber} mono /></dd>
+      <dt class="label">Registered agent</dt><dd><Fact value={COMPANY.registeredAgent} /></dd>
+      <dt class="label">Principal address</dt><dd>{isPending(COMPANY.address) ? <Fact value={COMPANY.address} /> : `${COMPANY.address.street}, ${COMPANY.address.locality}, ${COMPANY.address.region} ${COMPANY.address.postalCode}, ${COMPANY.address.country}`}</dd>
+      <dt class="label">Also registered in</dt><dd><Fact value={COMPANY.foreignRegistrations} /></dd>
+      <dt class="label">Management</dt><dd><Fact value={COMPANY.management} /></dd>
+      <dt class="label">EIN</dt><dd><Fact value={ein} mono /> <span class="small muted">Full EIN through the Due Diligence Room only.</span></dd>
+      <dt class="label">Countries</dt><dd><Fact value={COMPANY.countries} /></dd>
+      <dt class="label">Website</dt><dd><code>syndexventure.com</code></dd>
+    </dl>
+    <p class="small muted">Last reviewed: <Fact value={SITE.lastReviewed} mono /></p>
+  </section>
+
+  <section class="section" aria-labelledby="more-h">
+    <h2 id="more-h">More about the company</h2>
+    <ul>
+      <li><a href="/company/operating-model/">Operating Model</a>: how shared services, settlement and accounting work.</li>
+      <li><a href="/company/leadership/">Leadership</a>: who runs the company.</li>
+      <li><a href="/insights/">Insights</a>: operating briefs with methods and dates.</li>
+    </ul>
+  </section>
+</BaseLayout>

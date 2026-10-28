@@ -1,0 +1,21 @@
+---
+import Fact from './Fact.astro';
+import type { Maybe } from '@/lib/pending';
+export interface Props { items: { label: string; value: Maybe<unknown> }[] }
+const { items } = Astro.props;
+---
+<dl class="strip">
+  {items.map((i) => (
+    <div>
+      <dt class="label">{i.label}</dt>
+      <dd><Fact value={i.value} /></dd>
+    </div>
+  ))}
+</dl>
+<style>
+  .strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin: 0; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--bg); }
+  .strip > div { padding: var(--s4) var(--s5); border-right: 1px solid var(--line); }
+  .strip > div:last-child { border-right: 0; }
+  @media (max-width: 720px) { .strip > div { border-right: 0; border-bottom: 1px solid var(--line); } .strip > div:last-child { border-bottom: 0; } }
+  dd { margin: var(--s1) 0 0; font-weight: 600; }
+</style>

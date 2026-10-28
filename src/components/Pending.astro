@@ -1,0 +1,22 @@
+---
+/** Block-level placeholder for a section whose content is not supplied yet. */
+export interface Props {
+  id: string;
+  label: string;
+}
+const { id, label } = Astro.props;
+---
+<div class="pending-block" data-pending={id}>
+  <span class="label">Pending · {id}</span>
+  <p>{label}</p>
+</div>
+<style>
+  .pending-block {
+    border: 1px dashed var(--warn);
+    border-radius: var(--radius-card);
+    padding: var(--s4) var(--s5);
+    margin-block: var(--s4);
+  }
+  .pending-block .label { color: var(--warn); }
+  .pending-block p { margin: var(--s2) 0 0; color: var(--ink); }
+</style>

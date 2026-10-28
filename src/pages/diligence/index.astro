@@ -1,0 +1,56 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import { DOCUMENTS } from '@/data/documents';
+import { DILIGENCE_SLA } from '@/config/site';
+---
+<BaseLayout
+  title="Due Diligence Room"
+  description="Request formation, banking and processing documents for underwriting, KYB and audit. Response within one business day."
+  crumbs={[{ label: 'Due Diligence', href: '/diligence/' }]}
+  next={[
+    { title: 'Trust & Compliance Center', text: 'Read our policies before you request them.', href: '/compliance/' },
+    { title: 'Entity & Brand Registry', text: 'Match each DBA and descriptor to the LLC.', href: '/portfolio/registry/' },
+  ]}
+>
+  <PageHeader
+    title="Due Diligence Room"
+    lede={`Underwriters, bank officers, auditors and partners can request our formation, banking and processing documents here. We review each request and send approved documents by secure link within ${DILIGENCE_SLA}.`}
+  >
+    <div class="btn-row">
+      <a class="btn" href="/diligence/request/?pack=kyb">Request standard KYB pack</a>
+      <a class="btn btn-secondary" href="/diligence/request/">Choose documents</a>
+    </div>
+  </PageHeader>
+
+  <form method="get" action="/diligence/request/">
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Documents available on request</caption>
+        <thead><tr><th scope="col"><span class="visually-hidden">Select</span></th><th scope="col">Document</th><th scope="col">Description</th><th scope="col">Availability</th><th scope="col">Turnaround</th></tr></thead>
+        <tbody>
+          {DOCUMENTS.map((d) => (
+            <tr>
+              <td>{d.availability === 'On request' && <input type="checkbox" name="docs" value={d.id} id={`doc-${d.id}`} aria-label={`Select ${d.name}`} />}</td>
+              <td><label for={`doc-${d.id}`}>{d.name}</label> <code class="muted">{d.id}</code></td>
+              <td>{d.description}</td>
+              <td>{d.availability === 'Public' && d.file ? <a href={d.file} download>Public · PDF</a> : 'On request'}</td>
+              <td>{d.availability === 'Public' ? 'Immediate' : DILIGENCE_SLA}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p><button class="btn" type="submit">Request selected documents</button></p>
+  </form>
+
+  <section class="section">
+    <h2>How requests are handled</h2>
+    <ol>
+      <li>You submit the request with your work email and organization.</li>
+      <li>We send you a receipt with a reference ID.</li>
+      <li>We review the request. Approved documents go out by secure link only.</li>
+    </ol>
+    <p class="small muted">We never send full EINs, bank account numbers or merchant IDs through this site.</p>
+  </section>
+</BaseLayout>

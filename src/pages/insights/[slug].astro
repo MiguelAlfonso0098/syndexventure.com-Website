@@ -1,0 +1,43 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { PROGRAMS } from '@/data/programs';
+
+export async function getStaticPaths() {
+  const briefs = await getCollection('insights', (b) => !b.data.draft);
+  return briefs.map((brief) => ({ params: { slug: brief.id }, props: { brief } }));
+}
+const { brief } = Astro.props;
+const { Content } = await render(brief);
+const words = (brief.body ?? '').split(/\s+/).length;
+const minutes = Math.max(1, Math.round(words / 230));
+const program = PROGRAMS.find((p) => p.slug === brief.data.program);
+const date = brief.data.published.toISOString().slice(0, 10);
+---
+<BaseLayout
+  title={brief.data.title}
+  description={brief.data.description}
+  type="article"
+  publishedTime={brief.data.published.toISOString()}
+  modifiedTime={brief.data.modified?.toISOString()}
+  author={brief.data.author}
+  section={brief.data.topic}
+  crumbs={[{ label: 'Insights', href: '/insights/' }, { label: brief.data.title, href: `/insights/${brief.id}/` }]}
+  next={[
+    program
+      ? { title: program.title, text: 'The partner program related to this brief.', href: `/partners/inquiry/?program=${program.slug}` }
+      : { title: 'Partner Programs', text: 'Work with us.', href: '/partners/' },
+    { title: 'All briefs', text: 'Back to Insights.', href: '/insights/' },
+  ]}
+>
+  <article class="brief">
+    <header>
+      <p class="label">{brief.data.topic}</p>
+      <h1>{brief.data.title}</h1>
+      <p class="small muted">{brief.data.author} · <time datetime={brief.data.published.toISOString()}>{date}</time> · {minutes} min read</p>
+    </header>
+    <Content />
+    <aside class="card"><p class="label">Method</p><p class="small">{brief.data.method}</p></aside>
+  </article>
+</BaseLayout>
+<style>.brief { max-width: 72ch; padding-block: var(--s6); } .brief aside { margin-top: var(--s6); }</style>

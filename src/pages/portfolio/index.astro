@@ -1,0 +1,41 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import BentoCard from '@/components/BentoCard.astro';
+import { LINES } from '@/data/lines';
+---
+<BaseLayout
+  title="Portfolio"
+  description="Four operating lines: cross-border commerce in Latin America, print-on-demand products, software and applications, and performance marketing and lead generation."
+  crumbs={[{ label: 'Portfolio', href: '/portfolio/' }]}
+  next={[
+    { title: 'Entity & Brand Registry', text: 'Every brand, domain and statement descriptor in one table.', href: '/portfolio/registry/' },
+    { title: 'Payments, Refunds & Chargebacks', text: 'How each line takes payment and handles disputes.', href: '/compliance/payments/' },
+  ]}
+>
+  <PageHeader
+    title="Portfolio"
+    lede="Syndex Ventures LLC operates four lines of business. Each brand trades under a DBA of the LLC and appears in the Entity & Brand Registry."
+  />
+  <div class="bento">
+    {LINES.map((l) => (
+      <BentoCard
+        level={2}
+        title={l.title}
+        text={l.short}
+        href={`/portfolio/${l.slug}/`}
+        metrics={[
+          { label: 'Customers', value: l.customers },
+          { label: 'NAICS', value: l.naics },
+        ]}
+      />
+    ))}
+    <BentoCard
+      level={2}
+      title="Entity & Brand Registry"
+      text="DBA, domain, statement descriptor, processor and support contact for every brand."
+      href="/portfolio/registry/"
+      cta="Open registry"
+    />
+  </div>
+</BaseLayout>

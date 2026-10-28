@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+
+const briefs = (await getCollection('insights', (b) => !b.data.draft)).sort((a, b) => +b.data.published - +a.data.published);
+const topics = ['Commerce', 'Software', 'Lead Generation', 'Operations'];
+---
+<BaseLayout
+  title="Insights"
+  description="Operating briefs from Syndex Ventures, with methods and dates."
+  crumbs={[{ label: 'Company', href: '/company/' }, { label: 'Insights', href: '/insights/' }]}
+  next={[
+    { title: 'Partner Programs', text: 'Work with us.', href: '/partners/' },
+    { title: 'Operating Model', text: 'How the company is run.', href: '/company/operating-model/' },
+  ]}
+>
+  <PageHeader title="Insights" lede="Short briefs on what we see across our operating lines. Each brief states its data source, date range and method." />
+  {briefs.length === 0 ? (
+    <p class="muted">No briefs published yet.</p>
+  ) : (
+    topics.map((t) => {
+      const list = briefs.filter((b) => b.data.topic === t);
+      return list.length > 0 && (
+        <section class="section">
+          <h2>{t}</h2>
+          <ul class="briefs">
+            {list.map((b) => (
+              <li><a href={`/insights/${b.id}/`}>{b.data.title}</a> <span class="small muted"><time datetime={b.data.published.toISOString()}>{b.data.published.toISOString().slice(0, 10)}</time> · {b.data.author}</span></li>
+            ))}
+          </ul>
+        </section>
+      );
+    })
+  )}
+</BaseLayout>
+<style>.briefs { list-style: none; padding: 0; display: grid; gap: var(--s3); }</style>

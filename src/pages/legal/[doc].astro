@@ -1,0 +1,31 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Pending from '@/components/Pending.astro';
+import Fact from '@/components/Fact.astro';
+import { COMPANY, MAILBOXES } from '@/config/site';
+import { isPending } from '@/lib/pending';
+import { LEGAL_DOCS as DOCS } from '@/data/legal';
+
+
+
+export function getStaticPaths() {
+  return Object.keys(DOCS).map((doc) => ({ params: { doc } }));
+}
+const key = Astro.params.doc as keyof typeof DOCS;
+const d = DOCS[key];
+---
+<BaseLayout title={d.title} description={`${d.title} for syndexventure.com, operated by ${COMPANY.legalName}.`} crumbs={[{ label: 'Legal', href: '/legal/' }, { label: d.title, href: `/legal/${key}/` }]}>
+  <PageHeader title={d.title} />
+  {key === 'imprint' ? (
+    <dl class="facts">
+      <dt class="label">Operator</dt><dd>{COMPANY.legalName}</dd>
+      <dt class="label">Address</dt><dd>{isPending(COMPANY.address) ? <Fact value={COMPANY.address} /> : `${COMPANY.address.street}, ${COMPANY.address.locality}, ${COMPANY.address.region} ${COMPANY.address.postalCode}, ${COMPANY.address.country}`}</dd>
+      <dt class="label">State file number</dt><dd><Fact value={COMPANY.entityNumber} mono /></dd>
+      <dt class="label">Email</dt><dd><a href={`mailto:${MAILBOXES.contact}`}><code>{MAILBOXES.contact}</code></a></dd>
+      <dt class="label">Phone</dt><dd><Fact value={COMPANY.phone} mono /></dd>
+    </dl>
+  ) : (
+    <Pending id={d.id} label={d.label} />
+  )}
+</BaseLayout>

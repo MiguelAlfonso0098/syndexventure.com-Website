@@ -1,0 +1,26 @@
+---
+import type { Policy } from '@/data/policies';
+export interface Props { policy: Policy; level?: 2 | 3 }
+const { policy, level = 3 } = Astro.props;
+const H = `h${level}` as 'h2' | 'h3';
+---
+<article class="card policy">
+  <H class="t"><a href={`/compliance/${policy.slug}/`}>{policy.title}</a></H>
+  <p class="small">{policy.summary}</p>
+  <dl>
+    <div><dt class="label">Effective</dt><dd>{policy.effectiveDate ? <code>{policy.effectiveDate}</code> : <span class="pending" data-pending={policy.inventoryId}>[{policy.inventoryId}]</span>}</dd></div>
+    <div><dt class="label">Version</dt><dd>{policy.version ? <code>{policy.version}</code> : <span class="muted small">Not published</span>}</dd></div>
+  </dl>
+  <div class="btn-row">
+    <a class="btn btn-secondary" href={`/compliance/${policy.slug}/`}>Read</a>
+    {policy.pdf && <a class="btn btn-secondary" href={policy.pdf} download>PDF</a>}
+  </div>
+</article>
+<style>
+  .policy { display: flex; flex-direction: column; gap: var(--s3); }
+  .t { font-size: var(--fs-h3); line-height: var(--lh-h3); }
+  .t, p { margin: 0; }
+  .t a { color: var(--ink); text-decoration: none; }
+  dl { display: flex; gap: var(--s5); margin: 0; }
+  dd { margin: var(--s1) 0 0; }
+</style>

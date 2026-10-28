@@ -1,0 +1,5 @@
+body{margin:0;font:1.0625rem/1.6 system-ui,sans-serif;background:#FFFFFF;color:#0F172A}
+main{max-width:640px;margin:96px auto;padding:0 16px}
+h1{font-size:1.75rem;line-height:1.2}
+a{color:#0369A1}
+@media (prefers-color-scheme:dark){body{background:#0F172A;color:#F1F5F9}a{color:#38BDF8}}

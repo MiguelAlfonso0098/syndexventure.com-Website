@@ -1,0 +1,9 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import { LEGAL_NAV } from '@/config/site';
+---
+<BaseLayout title="Legal" description="Privacy policy, terms of use, cookies, accessibility and imprint for syndexventure.com." crumbs={[{ label: 'Legal', href: '/legal/' }]}>
+  <PageHeader title="Legal" lede="The policies that govern this website. Brand stores and apps publish their own terms and privacy policies." />
+  <ul>{LEGAL_NAV.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+</BaseLayout>

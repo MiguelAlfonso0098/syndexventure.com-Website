@@ -1,0 +1,100 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Pending from '@/components/Pending.astro';
+import Fact from '@/components/Fact.astro';
+import { OFFICIAL_CONTACTS } from '@/data/contacts';
+import { BRANDS } from '@/data/registry';
+import { MAILBOXES, MAILBOXES_CONFIRMED, COMPANY } from '@/config/site';
+
+// Static allowlist built at deploy time (T10.1).
+const allow = [
+  ...OFFICIAL_CONTACTS,
+  ...(MAILBOXES_CONFIRMED ? Object.values(MAILBOXES).map((v) => ({ kind: 'email' as const, value: v, role: 'Official company mailbox' })) : []),
+  ...BRANDS.flatMap((b) => [
+    ...b.domains.map((d) => ({ kind: 'domain' as const, value: d, role: `Website of ${b.brand}, a brand of ${COMPANY.legalName}` })),
+    { kind: 'email' as const, value: b.supportEmail, role: `Support for ${b.brand}` },
+    ...(b.supportPhone ? [{ kind: 'phone' as const, value: b.supportPhone, role: `Support for ${b.brand}` }] : []),
+  ]),
+];
+---
+<BaseLayout
+  title="Verify a Contact or Domain"
+  description="Check whether an email, domain or phone number belongs to Syndex Ventures LLC."
+  crumbs={[{ label: 'Verify', href: '/verify/' }]}
+  next={[
+    { title: 'Report impersonation', text: 'Tell us about a message that used our name.', href: '/verify/report/' },
+    { title: 'Contact', text: 'Official contact channels.', href: '/contact/' },
+  ]}
+>
+  <PageHeader title="Verify a Contact or Domain" lede="Received an email, invoice or call from someone using the Syndex name? Check it here before you reply, pay or share data." />
+
+  <form class="form" data-verify>
+    <div class="field">
+      <label for="verify-q">Email address, domain or phone number</label>
+      <input id="verify-q" type="text" required autocomplete="off" spellcheck="false" />
+    </div>
+    <div><button class="btn" type="submit">Verify</button></div>
+  </form>
+  <noscript><p>Verification needs JavaScript. You can also call us on the number under Payment-change policy below.</p></noscript>
+
+  <div aria-live="polite" class="result" data-result></div>
+
+  <template id="tpl-ok">
+    <article class="card ok"><p class="badge-line"><span class="dot"></span><strong>Official</strong></p><p data-f="role"></p><p class="small">Still confirm any change to payment details by calling the number below.</p></article>
+  </template>
+  <template id="tpl-no">
+    <article class="card no"><p class="badge-line"><span class="dot"></span><strong>Not recognized</strong></p><p><strong>Do not send payment or data.</strong> This contact is not on our official list.</p><p><a href="/verify/report/">Report this</a></p></article>
+  </template>
+
+  <section class="section" aria-labelledby="pay-h">
+    <h2 id="pay-h">Our payment-change policy</h2>
+    <p>We never change bank or payment details by email alone. Before acting on any request to change our payment details, call us on our official number.</p>
+    <p>Callback number: <Fact value={COMPANY.phone} mono /></p>
+    <Pending id="V4" label="Payment-change policy wording and callback number." />
+  </section>
+
+  <section class="section" aria-labelledby="list-h">
+    <h2 id="list-h">Official domains and contacts</h2>
+    <ul class="mono-list">{allow.filter((a) => a.kind === 'domain').map((a) => <li><code>{a.value}</code></li>)}</ul>
+    <Pending id="V1–V3" label="Every domain the LLC owns, official email addresses or naming pattern, and official phone numbers." />
+  </section>
+
+  <script type="application/json" id="allow" set:html={JSON.stringify(allow)} />
+</BaseLayout>
+
+<script>
+  type Entry = { kind: string; value: string; role: string };
+  const allow: Entry[] = JSON.parse(document.getElementById('allow')!.textContent || '[]');
+  const out = document.querySelector<HTMLElement>('[data-result]')!;
+  const digits = (s: string) => s.replace(/\D/g, '');
+
+  const check = (raw: string): Entry | undefined => {
+    const q = raw.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+    if (/^\+?[\d\s().-]{7,}$/.test(q)) return allow.find((a) => a.kind === 'phone' && digits(a.value) === digits(q));
+    if (q.includes('@')) {
+      const exact = allow.find((a) => a.kind === 'email' && a.value.toLowerCase() === q);
+      if (exact) return exact;
+      // An address on an official domain is only "official" if the domain's mailboxes are listed.
+      return undefined;
+    }
+    return allow.find((a) => a.kind === 'domain' && (q === a.value || q === `www.${a.value}`));
+  };
+
+  document.querySelector('[data-verify]')!.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const hit = check((document.getElementById('verify-q') as HTMLInputElement).value);
+    const tpl = document.getElementById(hit ? 'tpl-ok' : 'tpl-no') as HTMLTemplateElement;
+    const node = tpl.content.cloneNode(true) as DocumentFragment;
+    if (hit) node.querySelector('[data-f="role"]')!.textContent = hit.role;
+    out.replaceChildren(node);
+  });
+</script>
+<style>
+  .result { margin-top: var(--s5); max-width: 640px; }
+  .badge-line { display: flex; align-items: center; gap: var(--s2); font-family: var(--font-mono); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .ok { border-color: var(--success); } .ok .badge-line { color: var(--success-text); } .ok .dot { background: var(--success); }
+  .no { border-color: var(--warn); } .no .badge-line { color: var(--warn); } .no .dot { background: var(--warn); }
+  .mono-list { list-style: none; padding: 0; }
+</style>

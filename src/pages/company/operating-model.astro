@@ -1,0 +1,68 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Pending from '@/components/Pending.astro';
+import { COMPANY } from '@/config/site';
+import { LINES } from '@/data/lines';
+---
+<BaseLayout
+  title="Operating Model"
+  description="How Syndex Ventures LLC runs shared services, keeps brands separate, settles payments and accounts for each line."
+  crumbs={[{ label: 'Company', href: '/company/' }, { label: 'Operating Model', href: '/company/operating-model/' }]}
+  next={[
+    { title: 'Request controls summary', text: 'The financial controls summary, through the Due Diligence Room.', href: '/diligence/request/?docs=D10' },
+    { title: 'Entity & Brand Registry', text: 'Every brand and its payment route.', href: '/portfolio/registry/' },
+  ]}
+>
+  <PageHeader title="Operating Model" lede={`${COMPANY.legalName} runs every brand from one company. Shared teams serve all brands. Each brand takes payment under its own descriptor, and every line is accounted for separately.`} />
+
+  <figure class="diagram card" aria-labelledby="diagram-cap">
+    <svg viewBox="0 0 720 300" role="img" aria-labelledby="diagram-title diagram-desc">
+      <title id="diagram-title">Structure and settlement</title>
+      <desc id="diagram-desc">Syndex Ventures LLC provides shared services to brands in four lines. Brand payments settle to the company's master account and are recorded in a ledger tracked by line.</desc>
+      <g font-family="var(--font-mono)" font-size="12" fill="var(--ink)">
+        <rect x="260" y="10" width="200" height="40" rx="6" fill="var(--bg)" stroke="var(--line)" />
+        <text x="360" y="35" text-anchor="middle">{COMPANY.legalName}</text>
+        <line x1="360" y1="50" x2="360" y2="80" stroke="var(--muted)" />
+        <rect x="260" y="80" width="200" height="40" rx="6" fill="var(--bg)" stroke="var(--line)" />
+        <text x="360" y="105" text-anchor="middle">Shared Services</text>
+        {LINES.map((l, i) => (
+          <g>
+            <line x1="360" y1="120" x2={90 + i * 180} y2="150" stroke="var(--muted)" />
+            <rect x={10 + i * 180} y="150" width="160" height="40" rx="6" fill="var(--bg)" stroke="var(--line)" />
+            <text x={90 + i * 180} y="174" text-anchor="middle" font-size="10">{l.registryLine} brands</text>
+            <line x1={90 + i * 180} y1="190" x2="360" y2="220" stroke="var(--accent)" stroke-dasharray="3 3" />
+          </g>
+        ))}
+        <rect x="200" y="220" width="320" height="30" rx="6" fill="var(--bg)" stroke="var(--accent)" />
+        <text x="360" y="240" text-anchor="middle">Settlement → master account</text>
+        <line x1="360" y1="250" x2="360" y2="265" stroke="var(--muted)" />
+        <rect x="200" y="265" width="320" height="30" rx="6" fill="var(--bg)" stroke="var(--line)" />
+        <text x="360" y="285" text-anchor="middle">Class-tracked ledger</text>
+      </g>
+    </svg>
+    <figcaption id="diagram-cap" class="small muted">Solid lines show services. Dashed lines show settlement.</figcaption>
+  </figure>
+
+  <section class="section">
+    <h2>Shared Services</h2>
+    <p>Shared Services is a division of the LLC. It provides media buying, development and lead delivery to every brand, so each brand runs on the same controls.</p>
+  </section>
+  <section class="section">
+    <h2>Brand Separation</h2>
+    <p>Each brand is registered as a DBA of the LLC. Each has its own domain, support contact and, where it takes card payments, its own statement descriptor. The <a href="/portfolio/registry/">Entity &amp; Brand Registry</a> lists them all.</p>
+  </section>
+  <section class="section">
+    <h2>How settlement works</h2>
+    <p>Card processors and marketplaces settle each brand’s sales to one master business account. Lead generation revenue arrives by invoice to the same account. Each line has its own virtual sub-account, and the books track every transaction by venture.</p>
+    <Pending id="D10" label="Settlement cadence per processor and the list of virtual sub-accounts to describe." />
+  </section>
+  <section class="section">
+    <h2>Security</h2>
+    <Pending id="P6" label="Security practices to describe (MFA, encryption, access reviews)." />
+  </section>
+</BaseLayout>
+<style>
+  .diagram { margin: 0 0 var(--s6); }
+  .diagram svg { width: 100%; height: auto; display: block; }
+</style>

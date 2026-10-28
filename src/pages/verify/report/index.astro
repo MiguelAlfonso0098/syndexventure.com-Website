@@ -1,0 +1,21 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Turnstile from '@/components/Turnstile.astro';
+---
+<BaseLayout
+  title="Report impersonation"
+  description="Report an email, invoice, call or website that used the Syndex Ventures name."
+  crumbs={[{ label: 'Verify', href: '/verify/' }, { label: 'Report impersonation', href: '/verify/report/' }]}
+>
+  <PageHeader title="Report impersonation" lede="Tell us what you received. Our security team reviews every report." />
+  <form class="form" method="post" action="/api/report">
+    <input type="hidden" name="kind" value="impersonation" />
+    <div class="field"><label for="r-what">What did you receive?</label><textarea id="r-what" name="what" required></textarea></div>
+    <div class="field"><label for="r-sender">Sender (email, phone or website)</label><input id="r-sender" name="sender" type="text" required /></div>
+    <div class="field"><label for="r-date">Date received</label><input id="r-date" name="date" type="text" inputmode="numeric" placeholder="YYYY-MM-DD" /></div>
+    <div class="field"><label for="r-email">Your email (optional, for follow-up)</label><input id="r-email" name="email" type="email" autocomplete="email" /></div>
+    <Turnstile />
+    <div><button class="btn" type="submit">Report this</button></div>
+  </form>
+</BaseLayout>

@@ -1,0 +1,155 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Pending from '@/components/Pending.astro';
+import StatusBadge from '@/components/StatusBadge.astro';
+import Fact from '@/components/Fact.astro';
+import { BRANDS } from '@/data/registry';
+import { LINES } from '@/data/lines';
+import { COMPANY, SITE } from '@/config/site';
+import { known } from '@/lib/pending';
+
+const reviewed = known(SITE.lastReviewed) ?? 'pending';
+const csvName = `syndex-registry-${reviewed}.csv`;
+---
+<BaseLayout
+  title="Entity & Brand Registry"
+  description="Every brand, domain and card statement descriptor operated by Syndex Ventures LLC, with support contacts. Updated quarterly."
+  crumbs={[{ label: 'Portfolio', href: '/portfolio/' }, { label: 'Entity & Brand Registry', href: '/portfolio/registry/' }]}
+  next={[
+    { title: 'Verify a Contact or Domain', text: 'Check an email, domain or phone number against our official list.', href: '/verify/' },
+    { title: 'Due Diligence Room', text: 'Request DBA certificates and processing statements.', href: '/diligence/' },
+  ]}
+>
+  <PageHeader
+    title="Entity & Brand Registry"
+    lede={`Every brand operated by ${COMPANY.legalName}, with its DBA filing, domain, statement descriptor, payment route and support contact. Descriptors are shown exactly as they print on statements.`}
+  >
+    <p class="small">Last reviewed: <Fact value={SITE.lastReviewed} mono /></p>
+  </PageHeader>
+
+  <div class="tools">
+    <div class="field search">
+      <label for="registry-search">Search by brand, domain or descriptor</label>
+      <input id="registry-search" type="search" autocomplete="off" spellcheck="false" placeholder="e.g. a descriptor from a statement" />
+    </div>
+    <fieldset class="chips">
+      <legend class="label">Line</legend>
+      <label class="chip"><input type="radio" name="line" value="" checked /> All</label>
+      {LINES.map((l) => <label class="chip"><input type="radio" name="line" value={l.registryLine} /> {l.title}</label>)}
+    </fieldset>
+    <a class="btn btn-secondary" href="/registry.csv" download={csvName}>Download CSV</a>
+  </div>
+
+  {BRANDS.length === 0 && (
+    <Pending id="B1–Bn" label="Registry rows: one per brand, with DBA filing state, number and date, domains, statement descriptors, processor, countries, support contact, refund policy URL, status and last reviewed date." />
+  )}
+
+  <div class="table-wrap" data-registry>
+    <table>
+      <caption class="visually-hidden">Brands operated by {COMPANY.legalName}</caption>
+      <thead>
+        <tr>
+          <th scope="col">Brand</th><th scope="col">Line</th><th scope="col">Domain</th>
+          <th scope="col">Descriptor</th><th scope="col">Payment route</th><th scope="col">Status</th><th scope="col"><span class="visually-hidden">Details</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {BRANDS.map((b) => (
+          <tr data-line={b.line} data-search={[b.brand, ...b.domains, ...b.descriptors].join(' ').toLowerCase()}>
+            <td>{b.brand}</td>
+            <td>{b.line}</td>
+            <td><code>{b.domains.join(', ')}</code></td>
+            <td><code>{b.descriptors.join(', ') || 'None (invoiced)'}</code></td>
+            <td>{b.paymentRoute}</td>
+            <td><StatusBadge status={b.status} /></td>
+            <td>
+              <button type="button" class="btn btn-secondary" data-open={b.id}>Details</button>
+              <template id={`row-${b.id}`}>{[
+                `Brand: ${b.brand}`,
+                `Legal entity: ${COMPANY.legalName}`,
+                `Operates under: ${b.operatesUnder}`,
+                `Domain(s): ${b.domains.join(', ')}`,
+                `Descriptor(s): ${b.descriptors.join(', ') || 'None (invoiced)'}`,
+                `Payment route: ${b.paymentRoute}`,
+                `Countries: ${b.countries.join(', ')}`,
+                `Support: ${b.supportEmail}${b.supportPhone ? ` / ${b.supportPhone}` : ''}`,
+                `Status: ${b.status}`,
+                `Last reviewed: ${b.lastReviewed}`,
+              ].join('\n')}</template>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card not-found" data-empty hidden>
+    <h2>Not in our registry</h2>
+    <p>No brand matches that search. If someone used it to contact or bill you in our name, check it on <a href="/verify/">Verify a Contact or Domain</a>, or <a href="/contact/">contact us</a>.</p>
+  </div>
+
+  <dialog class="drawer" aria-labelledby="drawer-h">
+    <h2 id="drawer-h">Brand details</h2>
+    <pre data-drawer-body></pre>
+    <div class="btn-row">
+      <button type="button" class="btn" data-copy>Copy row</button>
+      <button type="button" class="btn btn-secondary" data-close>Close</button>
+    </div>
+    <p class="small" role="status" aria-live="polite" data-toast></p>
+  </dialog>
+</BaseLayout>
+
+<script>
+  // Client-side filter, drawer and copy. Registry stays under 200 rows (T3.1).
+  const search = document.getElementById('registry-search') as HTMLInputElement;
+  const rows = [...document.querySelectorAll<HTMLTableRowElement>('[data-registry] tbody tr')];
+  const empty = document.querySelector<HTMLElement>('[data-empty]')!;
+  const dialog = document.querySelector<HTMLDialogElement>('dialog.drawer')!;
+  const body = dialog.querySelector<HTMLElement>('[data-drawer-body]')!;
+  const toast = dialog.querySelector<HTMLElement>('[data-toast]')!;
+
+  const apply = () => {
+    const q = search.value.trim().toLowerCase().replace(/\*/g, '');
+    const line = (document.querySelector<HTMLInputElement>('input[name="line"]:checked')?.value) ?? '';
+    let shown = 0;
+    for (const r of rows) {
+      const match = (!q || (r.dataset.search ?? '').replace(/\*/g, '').includes(q)) && (!line || r.dataset.line === line);
+      r.hidden = !match;
+      if (match) shown++;
+    }
+    empty.hidden = !(q && shown === 0);
+  };
+  search.addEventListener('input', apply);
+  document.querySelectorAll('input[name="line"]').forEach((el) => el.addEventListener('change', apply));
+  if (location.hash === '#registry-search') search.focus();
+
+  document.addEventListener('click', async (e) => {
+    const t = e.target as HTMLElement;
+    const id = t.closest<HTMLElement>('[data-open]')?.dataset.open;
+    if (id) {
+      body.textContent = (document.getElementById(`row-${id}`) as HTMLTemplateElement).content.textContent;
+      toast.textContent = '';
+      dialog.showModal();
+    }
+    if (t.closest('[data-close]')) dialog.close();
+    if (t.closest('[data-copy]')) {
+      await navigator.clipboard.writeText(body.textContent ?? '');
+      toast.textContent = 'Copied.';
+    }
+  });
+</script>
+
+<style>
+  .tools { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--s4); margin-bottom: var(--s5); }
+  .search { flex: 1 1 320px; }
+  .chips { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
+  .chips legend { margin-bottom: var(--s2); width: 100%; }
+  .chip { display: inline-flex; align-items: center; gap: var(--s2); padding: var(--s1) var(--s3); border: 1px solid var(--line); border-radius: 999px; font-size: var(--fs-small); cursor: pointer; }
+  .chip:has(input:checked) { border-color: var(--accent-text); color: var(--accent-text); }
+  .chip input { accent-color: var(--accent-text); }
+  .not-found { margin-top: var(--s5); }
+  .drawer { border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--bg); color: var(--ink); width: min(560px, calc(100vw - 32px)); padding: var(--s5); }
+  .drawer::backdrop { background: color-mix(in srgb, var(--muted) 60%, transparent); }
+  .drawer pre { font-family: var(--font-mono); font-size: var(--fs-data); white-space: pre-wrap; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-control); padding: var(--s4); }
+</style>

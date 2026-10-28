@@ -1,0 +1,17 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Pending from '@/components/Pending.astro';
+---
+<BaseLayout
+  title="Leadership"
+  description="The people who lead Syndex Ventures LLC."
+  crumbs={[{ label: 'Company', href: '/company/' }, { label: 'Leadership', href: '/company/leadership/' }]}
+  next={[
+    { title: 'Company', text: 'Entity details and formation facts.', href: '/company/' },
+    { title: 'Verify a Contact', text: 'Confirm that a person or email is genuinely ours.', href: '/verify/' },
+  ]}
+>
+  <PageHeader title="Leadership" lede="The people responsible for running the company." />
+  <Pending id="C9" label="Leaders to list: names and titles." />
+</BaseLayout>

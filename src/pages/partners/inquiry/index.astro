@@ -1,0 +1,40 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Turnstile from '@/components/Turnstile.astro';
+import { PROGRAMS } from '@/data/programs';
+---
+<BaseLayout
+  title="Partner Inquiry"
+  description="Start a partnership inquiry with Syndex Ventures."
+  crumbs={[{ label: 'Partners', href: '/partners/' }, { label: 'Partner Inquiry', href: '/partners/inquiry/' }]}
+>
+  <PageHeader title="Partner Inquiry" lede="Tell us about your company and what you are looking for. We reply by email." />
+  <form class="form" method="post" action="/api/inquiry">
+    <div class="field">
+      <label for="pi-program">Program</label>
+      <select id="pi-program" name="program" required>
+        {PROGRAMS.map((p) => <option value={p.slug}>{p.title}</option>)}
+        <option value="not-sure">Not sure</option>
+      </select>
+    </div>
+    <div class="field"><label for="pi-company">Company</label><input id="pi-company" name="company" type="text" required autocomplete="organization" /></div>
+    <div class="field"><label for="pi-name">Your name</label><input id="pi-name" name="name" type="text" required autocomplete="name" /></div>
+    <div class="field"><label for="pi-email">Work email</label><input id="pi-email" name="email" type="email" required autocomplete="email" /></div>
+    <div class="field"><label for="pi-phone">Phone (optional)</label><input id="pi-phone" name="phone" type="tel" autocomplete="tel" /></div>
+    <div class="field"><label for="pi-verticals">Verticals or products</label><input id="pi-verticals" name="verticals" type="text" /><p class="hint">For example Medicare, final expense, apparel, last-mile delivery.</p></div>
+    <div class="field"><label for="pi-volume">Monthly volume</label><input id="pi-volume" name="volume" type="text" /><p class="hint">Leads, calls, orders or units per month.</p></div>
+    <div class="field"><label for="pi-coverage">States or countries</label><input id="pi-coverage" name="coverage" type="text" /></div>
+    <div class="field"><label for="pi-delivery">Delivery method (lead buyers)</label>
+      <select id="pi-delivery" name="delivery"><option value="">Not applicable</option><option>Ping/post</option><option>Live transfer</option><option>Posted leads</option><option>Other</option></select>
+    </div>
+    <div class="field"><label for="pi-message">Message</label><textarea id="pi-message" name="message"></textarea></div>
+    <Turnstile />
+    <div><button class="btn" type="submit">Submit Inquiry</button></div>
+  </form>
+</BaseLayout>
+<script>
+  const p = new URLSearchParams(location.search).get('program');
+  const sel = document.getElementById('pi-program') as HTMLSelectElement;
+  if (p && [...sel.options].some((o) => o.value === p)) sel.value = p;
+</script>

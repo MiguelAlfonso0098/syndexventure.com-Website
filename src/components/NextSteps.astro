@@ -1,0 +1,25 @@
+---
+/** The "Next step" block at the foot of every page: two cards. */
+export interface Step { title: string; text: string; href: string }
+export interface Props { steps: [Step, Step] }
+const { steps } = Astro.props;
+---
+<section class="next-steps container" aria-labelledby="next-steps-h">
+  <h2 id="next-steps-h" class="label">Next step</h2>
+  <div class="pair">
+    {steps.map((s) => (
+      <a class="card step" href={s.href}>
+        <span class="t">{s.title} <span aria-hidden="true">→</span></span>
+        <span class="small muted">{s.text}</span>
+      </a>
+    ))}
+  </div>
+</section>
+<style>
+  .next-steps { padding-top: var(--s7); }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4); }
+  @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } }
+  .step { display: grid; gap: var(--s2); text-decoration: none; color: var(--ink); transition: border-color var(--ease); }
+  .step:hover { border-color: var(--accent); }
+  .t { font: 600 var(--fs-h3)/var(--lh-h3) var(--font-display); }
+</style>

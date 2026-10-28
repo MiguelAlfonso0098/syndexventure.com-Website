@@ -1,0 +1,16 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Pending from '@/components/Pending.astro';
+---
+<BaseLayout title="Inquiry received" noindex crumbs={[{ label: 'Partners', href: '/partners/' }, { label: 'Inquiry received', href: '/partners/inquiry/thanks/' }]}>
+  <PageHeader title="Inquiry received" lede="Thank you. A receipt is on its way to your email.">
+    <p>Reference ID: <code data-ref>sent in your receipt</code></p>
+  </PageHeader>
+  <Pending id="R5" label="Expected response time for partner inquiries, and the optional scheduling link." />
+  <p><a href="/partners/">Back to Partner Programs</a></p>
+</BaseLayout>
+<script>
+  const ref = new URLSearchParams(location.search).get('ref');
+  if (ref && /^[A-Z]{2}-\d{4}-[A-Z0-9]{6}$/.test(ref)) document.querySelector('[data-ref]')!.textContent = ref;
+</script>

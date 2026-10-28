@@ -1,0 +1,105 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import Pending from '@/components/Pending.astro';
+import { BRANDS, normalizeDescriptor } from '@/data/registry';
+
+// Only consumer-facing fields are embedded. Built at deploy time.
+const index = BRANDS.filter((b) => b.descriptors.length > 0).map((b) => ({
+  keys: b.descriptors.map(normalizeDescriptor),
+  brand: b.brand,
+  product: b.productType,
+  countries: b.countries.join(', '),
+  support: b.supportUrl,
+  refund: b.refundPolicyUrl ?? '',
+}));
+---
+<BaseLayout
+  title="Identify a Charge"
+  description="See which Syndex brand billed you and contact its support team for orders or refunds."
+  crumbs={[{ label: 'Identify a Charge', href: '/charge-lookup/' }]}
+  next={[
+    { title: 'Entity & Brand Registry', text: 'The full list of our brands and descriptors.', href: '/portfolio/registry/' },
+    { title: 'Payments, Refunds & Chargebacks', text: 'Our refund policy.', href: '/compliance/payments/' },
+  ]}
+>
+  <PageHeader title="Identify a Charge" lede="Enter the text exactly as it appears on your card statement. We show which of our brands billed you and how to reach its support team." />
+
+  {BRANDS.length === 0 && <Pending id="B1–Bn" label="Statement descriptors and support links from the brand registry. The lookup has nothing to match until registry rows are added." />}
+
+  <form class="form" data-lookup>
+    <div class="field">
+      <label for="descriptor">Statement text</label>
+      <input id="descriptor" name="descriptor" type="text" required autocomplete="off" spellcheck="false" placeholder="As printed on your statement" />
+      <p class="hint">Case, asterisks, spaces and trailing numbers are ignored.</p>
+    </div>
+    <div><button class="btn" type="submit">Look up</button></div>
+  </form>
+  <noscript><p>Lookup needs JavaScript. You can search the <a href="/portfolio/registry/">Entity &amp; Brand Registry</a> instead.</p></noscript>
+
+  <div aria-live="polite" data-result class="result"></div>
+
+  <template id="tpl-match">
+    <article class="card">
+      <h2 data-f="brand"></h2>
+      <p data-f="product"></p>
+      <p class="small muted" data-f="countries"></p>
+      <div class="btn-row">
+        <a class="btn ext" data-f="support">Contact this brand</a>
+        <a class="btn btn-secondary ext" data-f="refund">Refund policy</a>
+      </div>
+    </article>
+  </template>
+  <template id="tpl-none">
+    <article class="card">
+      <h2>No match found</h2>
+      <p>That text does not match any brand in our registry, so the charge may not be from a Syndex brand. Contact your card issuer about it. If someone used our name, <a href="/verify/report/">report it</a>.</p>
+    </article>
+  </template>
+
+  <script type="application/json" id="charge-index" set:html={JSON.stringify(index)} />
+</BaseLayout>
+
+<script>
+  type Entry = { keys: string[]; brand: string; product: string; countries: string; support: string; refund: string };
+  const index: Entry[] = JSON.parse(document.getElementById('charge-index')!.textContent || '[]');
+  const norm = (s: string) => s.toUpperCase().replace(/[*\s]+/g, '').replace(/\d+$/, '');
+  const out = document.querySelector<HTMLElement>('[data-result]')!;
+
+  const card = (e: Entry) => {
+    const node = (document.getElementById('tpl-match') as HTMLTemplateElement).content.cloneNode(true) as DocumentFragment;
+    const f = (k: string) => node.querySelector<HTMLElement>(`[data-f="${k}"]`)!;
+    f('brand').textContent = e.brand;
+    f('product').textContent = e.product;
+    f('countries').textContent = e.countries;
+    (f('support') as HTMLAnchorElement).href = e.support;
+    if (e.refund) (f('refund') as HTMLAnchorElement).href = e.refund; else f('refund').remove();
+    return node;
+  };
+
+  document.querySelector('[data-lookup]')!.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const q = norm((document.getElementById('descriptor') as HTMLInputElement).value);
+    const hits = q ? index.filter((e) => e.keys.some((k) => k === q || k.startsWith(q) || q.startsWith(k))) : [];
+    out.replaceChildren();
+    if (hits.length === 0) {
+      out.append((document.getElementById('tpl-none') as HTMLTemplateElement).content.cloneNode(true));
+    } else if (hits.length === 1) {
+      out.append(card(hits[0]));
+    } else {
+      const p = document.createElement('p');
+      p.textContent = 'More than one brand matches. Pick the one that fits your purchase:';
+      const list = document.createElement('div');
+      list.className = 'btn-row';
+      hits.forEach((h) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'btn btn-secondary';
+        b.textContent = `${h.brand} · ${h.product} · ${h.countries}`;
+        b.addEventListener('click', () => out.replaceChildren(card(h)));
+        list.append(b);
+      });
+      out.append(p, list);
+    }
+  });
+</script>
+<style>.result { margin-top: var(--s5); max-width: 640px; }</style>

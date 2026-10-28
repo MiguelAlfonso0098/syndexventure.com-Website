@@ -1,0 +1,14 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+---
+<BaseLayout title="Report received" noindex crumbs={[{ label: 'Verify', href: '/verify/' }, { label: 'Report received', href: '/verify/report/thanks/' }]}>
+  <PageHeader title="Report received" lede="Thank you. Do not reply to, pay or share data with the sender while we review it.">
+    <p>Reference ID: <code data-ref>sent in your receipt, if you gave an email</code></p>
+  </PageHeader>
+  <p><a href="/verify/">Back to Verify</a></p>
+</BaseLayout>
+<script>
+  const ref = new URLSearchParams(location.search).get('ref');
+  if (ref && /^[A-Z]{2}-\d{4}-[A-Z0-9]{6}$/.test(ref)) document.querySelector('[data-ref]')!.textContent = ref;
+</script>
