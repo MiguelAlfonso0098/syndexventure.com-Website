@@ -54,9 +54,8 @@ export const COMPANY: {
   formationDate: '2025-01-10', // C3, filed with the Wyoming Secretary of State
   entityNumber: '2025-001588201', // C4, Wyoming filing ID
   registeredAgent: 'Miguel Alfonso Perez, 30 N Gould St Ste R, Sheridan, WY 82801', // C5
-  // C6: the filed principal office is a residential apartment, which the spec keeps off the site.
-  // Waiting on a business address from Miguel.
-  address: pending('C6', 'Principal business address'),
+  // C6, given by Miguel 2026-10-28. Same address as the registered agent (C5).
+  address: { street: '30 N Gould St Ste R', locality: 'Sheridan', region: 'WY', postalCode: '82801', country: 'US' },
   foreignRegistrations: pending('C7', 'Other states where the LLC is registered'),
   management: 'Manager-managed', // C8, Operating Agreement section 4
   einLast4: '4568', // C11, last 4 only. Full EIN goes out through Diligence only.
