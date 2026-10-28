@@ -50,17 +50,18 @@ export const COMPANY: {
   xHandle: Maybe<string>;
 } = {
   legalName: 'Syndex Ventures LLC', // C1
-  formationState: pending('C2', 'State of formation'),
-  // The SEO kit had foundingDate '2026' as a placeholder; keep pending until C3 is answered.
-  formationDate: pending('C3', 'Formation date'),
-  entityNumber: pending('C4', 'State file / entity number'),
-  registeredAgent: pending('C5', 'Registered agent name and address'),
+  formationState: 'Wyoming', // C2, Articles of Organization
+  formationDate: '2025-01-10', // C3, filed with the Wyoming Secretary of State
+  entityNumber: '2025-001588201', // C4, Wyoming filing ID
+  registeredAgent: 'Miguel Alfonso Perez, 30 N Gould St Ste R, Sheridan, WY 82801', // C5
+  // C6: the filed principal office is a residential apartment, which the spec keeps off the site.
+  // Waiting on a business address from Miguel.
   address: pending('C6', 'Principal business address'),
   foreignRegistrations: pending('C7', 'Other states where the LLC is registered'),
-  management: pending('C8', 'Member-managed or manager-managed'),
-  einLast4: pending('C11', 'EIN last 4'),
-  countries: pending('C13', 'Countries where the company operates or sells'),
-  phone: pending('C14', 'Main phone number'),
+  management: 'Manager-managed', // C8, Operating Agreement section 4
+  einLast4: '4568', // C11, last 4 only. Full EIN goes out through Diligence only.
+  countries: ['Mexico', 'Colombia', 'Chile', 'Argentina', 'Dominican Republic', 'Guatemala'], // C13
+  phone: '+1 321-415-6682', // C14
   // Kit default to confirm: https://www.linkedin.com/company/syndex-ventures
   linkedin: pending('C15', 'LinkedIn company URL'),
   // Spec suggests @syndexventures; confirm before use (C15).

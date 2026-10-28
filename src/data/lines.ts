@@ -31,7 +31,7 @@ export const LINES: OperatingLine[] = [
       'Syndex operates e-commerce stores in Latin America. Each store trades under its own brand, registered as a DBA of Syndex Ventures LLC, and lists its own statement descriptor in the registry.',
     whatWeSell: 'Consumer products sold through branded online stores.',
     customers: 'Consumers in the countries each store serves.',
-    countries: pending('C13', 'Countries for Cross-Border Commerce'),
+    countries: 'Mexico, Colombia, Chile, Argentina, Dominican Republic and Guatemala.',
     howPaid:
       'Customers pay at checkout. Payments are processed by regional acquirers, and each store’s statement descriptor matches its DBA.',
     processors: 'Regional acquirers, named per brand in the registry.',
