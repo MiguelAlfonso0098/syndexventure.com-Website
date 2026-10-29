@@ -7,7 +7,7 @@ import Fact from '@/components/Fact.astro';
 import { BRANDS } from '@/data/registry';
 import { LINES } from '@/data/lines';
 import { COMPANY, SITE } from '@/config/site';
-import { known } from '@/lib/pending';
+import { known, isPending, plain } from '@/lib/pending';
 
 const reviewed = known(SITE.lastReviewed) ?? 'pending';
 const csvName = `syndex-registry-${reviewed}.csv`;
@@ -41,7 +41,7 @@ const csvName = `syndex-registry-${reviewed}.csv`;
     <a class="btn btn-secondary" href="/registry.csv" download={csvName}>Download CSV</a>
   </div>
 
-  {BRANDS.length === 0 && (
+  {BRANDS.length < 1 && (
     <Pending id="B1–Bn" label="Registry rows: one per brand, with DBA filing state, number and date, domains, statement descriptors, processor, countries, support contact, refund policy URL, status and last reviewed date." />
   )}
 
@@ -56,11 +56,11 @@ const csvName = `syndex-registry-${reviewed}.csv`;
       </thead>
       <tbody>
         {BRANDS.map((b) => (
-          <tr data-line={b.line} data-search={[b.brand, ...b.domains, ...b.descriptors].join(' ').toLowerCase()}>
+          <tr data-line={b.line} data-search={[b.brand, ...b.domains, ...(isPending(b.descriptors) ? [] : b.descriptors)].join(' ').toLowerCase()}>
             <td>{b.brand}</td>
             <td>{b.line}</td>
             <td><code>{b.domains.join(', ')}</code></td>
-            <td><code>{b.descriptors.join(', ') || 'None (invoiced)'}</code></td>
+            <td>{isPending(b.descriptors) ? <Fact value={b.descriptors} /> : <code>{b.descriptors.join(', ') || 'None (invoiced)'}</code>}</td>
             <td>{b.paymentRoute}</td>
             <td><StatusBadge status={b.status} /></td>
             <td>
@@ -68,14 +68,15 @@ const csvName = `syndex-registry-${reviewed}.csv`;
               <template id={`row-${b.id}`}>{[
                 `Brand: ${b.brand}`,
                 `Legal entity: ${COMPANY.legalName}`,
-                `Operates under: ${b.operatesUnder}`,
+                `Operates under: ${plain(b.operatesUnder)}`,
                 `Domain(s): ${b.domains.join(', ')}`,
-                `Descriptor(s): ${b.descriptors.join(', ') || 'None (invoiced)'}`,
+                `Descriptor(s): ${plain(b.descriptors) || 'None (invoiced)'}`,
                 `Payment route: ${b.paymentRoute}`,
                 `Countries: ${b.countries.join(', ')}`,
                 `Support: ${b.supportEmail}${b.supportPhone ? ` / ${b.supportPhone}` : ''}`,
                 `Status: ${b.status}`,
-                `Last reviewed: ${b.lastReviewed}`,
+                `Refund policy: ${plain(b.refundPolicyUrl ?? 'n/a')}`,
+                `Last reviewed: ${plain(b.lastReviewed)}`,
               ].join('\n')}</template>
             </td>
           </tr>

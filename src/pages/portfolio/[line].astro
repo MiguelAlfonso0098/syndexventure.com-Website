@@ -6,6 +6,7 @@ import Pending from '@/components/Pending.astro';
 import StatusBadge from '@/components/StatusBadge.astro';
 import { LINES, type OperatingLine } from '@/data/lines';
 import { BRANDS } from '@/data/registry';
+import { isPending } from '@/lib/pending';
 
 export function getStaticPaths() {
   return LINES.map((line, i) => ({
@@ -103,7 +104,7 @@ const isLeads = line.slug === 'performance';
               <tr>
                 <td>{b.brand}</td>
                 <td><code>{b.domains.join(', ')}</code></td>
-                <td><code>{b.descriptors.join(', ') || 'None (invoiced)'}</code></td>
+                <td>{isPending(b.descriptors) ? <Fact value={b.descriptors} /> : <code>{b.descriptors.join(', ') || 'None (invoiced)'}</code>}</td>
                 <td><StatusBadge status={b.status} /></td>
               </tr>
             ))}
