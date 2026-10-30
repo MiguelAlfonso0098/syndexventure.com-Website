@@ -3,15 +3,17 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHeader from '@/components/PageHeader.astro';
 import Pending from '@/components/Pending.astro';
 import { BRANDS, normalizeDescriptor } from '@/data/registry';
+import { isPending, known } from '@/lib/pending';
 
 // Only consumer-facing fields are embedded. Built at deploy time.
-const index = BRANDS.filter((b) => b.descriptors.length > 0).map((b) => ({
-  keys: b.descriptors.map(normalizeDescriptor),
+// Brands whose descriptor is not final are left out until it is.
+const index = BRANDS.flatMap((b) => (isPending(b.descriptors) || b.descriptors.length === 0 ? [] : [{ b, descriptors: b.descriptors }])).map(({ b, descriptors }) => ({
+  keys: descriptors.map(normalizeDescriptor),
   brand: b.brand,
   product: b.productType,
   countries: b.countries.join(', '),
   support: b.supportUrl,
-  refund: b.refundPolicyUrl ?? '',
+  refund: known(b.refundPolicyUrl ?? '') ?? '',
 }));
 ---
 <BaseLayout
@@ -25,7 +27,7 @@ const index = BRANDS.filter((b) => b.descriptors.length > 0).map((b) => ({
 >
   <PageHeader title="Identify a Charge" lede="Enter the text exactly as it appears on your card statement. We show which of our brands billed you and how to reach its support team." />
 
-  {BRANDS.length === 0 && <Pending id="B1–Bn" label="Statement descriptors and support links from the brand registry. The lookup has nothing to match until registry rows are added." />}
+  {index.length === 0 && <Pending id="B1–Bn" label="Statement descriptors and support links from the brand registry. The lookup has nothing to match until registry rows are added." />}
 
   <form class="form" data-lookup>
     <div class="field">

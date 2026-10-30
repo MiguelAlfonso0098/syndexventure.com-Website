@@ -23,3 +23,7 @@ export const isPending = (v: unknown): v is Pending =>
 
 /** The value, or undefined while pending. Use for metadata and JSON-LD, which must never carry a marker. */
 export const known = <T>(v: Maybe<T>): T | undefined => (isPending(v) ? undefined : v);
+
+/** Plain-text form for copy blocks and CSV: the value, or "Pending (ID)". */
+export const plain = (v: Maybe<unknown>, join = ', '): string =>
+  isPending(v) ? `Pending (${v.id})` : Array.isArray(v) ? v.join(join) : String(v ?? '');
