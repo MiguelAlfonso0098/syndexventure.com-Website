@@ -35,7 +35,7 @@ export const BRANDS: Brand[] = [
     operatesUnder: pending('B5', 'DBA filing (not filed yet)'),
     domains: ['guavahaus.com'],
     descriptors: pending('B5', 'Statement descriptor (not final)'),
-    paymentRoute: 'Stripe',
+    paymentRoute: 'Shopify Payments (Shopify storefront)',
     countries: ['United States'],
     productType: 'Original-design print-on-demand products',
     supportEmail: 'hello@guavahaus.com',
